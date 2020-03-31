@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "359308520062",
+    "firebase_url": "https://courier-1559707105138.firebaseio.com",
+    "project_id": "courier-1559707105138",
+    "storage_bucket": "courier-1559707105138.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359308520062:android:ffa0d848b8520b8a38462f",
+        "android_client_info": {
+          "package_name": "com.nain.cloneuber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359308520062-pg0b1dttamh19gj2f856cq66m3o9mtpi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nain.cloneuber",
+            "certificate_hash": "e69a6c4448286e064f7a766e41b3a827c7def930"
+          }
+        },
+        {
+          "client_id": "359308520062-ft6c0oikmshjcnjmeohaa6p1jjn7r2ed.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC35LWc_zq8_LNl5-w2xMTOel5NSTvx9s4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359308520062-ft6c0oikmshjcnjmeohaa6p1jjn7r2ed.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
