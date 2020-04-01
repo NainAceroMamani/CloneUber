@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">CloneUber</string>
+    <string name="title_start">UberClone es un aplicativo similar a Uber</string>
+    <string name="text_nxn">NXN informatic Solutions</string>
+    <string name="text_conductor">SOY CONDUCTOR</string>
+    <string name="text_cliente">SOY CLIENTE</string>
+    <string name="select_options">Selecciona una Opción</string>
+    <string name="text_option1">YA TENGO CUENTA</string>
+    <string name="text_option2">REGISTRARME AHORA</string>
+    <string name="txt_login">Login</string>
+    <string name="txt_nameUber">Uber Eats</string>
+    <string name="txt_correo">Correo</string>
+    <string name="txt_password">Contraseña</string>
+    <string name="txt_register">Aún no te has registrado?</string>
+    <string name="txt_registrarse">Registrarse</string>
+    <string name="txt_nombre">Nombre</string>
+    <string name="txt_enviar">Enviar</string>
+    <string name="txt_sesion">Iniciar Sesión</string>
+    <string name="txt_option">Seleccione una opción</string>
+    <string name="error_credentials">El correo o la contraseña son incorrectos</string>
+    <string name="message_success_login">El Login se realizó exitosamente</string>
+    <string name="error_password">La contraseña debe tener más de 6 carácteres</string>
+    <string name="error_esEmpty">La contraseña y el email con obligatorias</string>
 </resources>
