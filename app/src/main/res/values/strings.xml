@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">CloneUber</string>
-    <string name="title_start">UberClone es un aplicativo similar a Uber</string>
+    <string name="title_start">Pide un viaje cuando lo necesites.</string>
     <string name="text_nxn">NXN informatic Solutions</string>
     <string name="text_conductor">SOY CONDUCTOR</string>
     <string name="text_cliente">SOY CLIENTE</string>
@@ -20,5 +20,6 @@
     <string name="error_credentials">El correo o la contraseña son incorrectos</string>
     <string name="message_success_login">El Login se realizó exitosamente</string>
     <string name="error_password">La contraseña debe tener más de 6 carácteres</string>
-    <string name="error_esEmpty">La contraseña y el email con obligatorias</string>
+    <string name="error_esEmpty">La contraseña y el email son obligatorias</string>
+    <string name="txt_message_login">Espere un momento</string>
 </resources>

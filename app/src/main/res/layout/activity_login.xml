@@ -164,7 +164,7 @@
                 android:elevation="10dp">
 
                 <ImageButton
-                    android:id="@+id/btnRegister"
+                    android:id="@+id/btnLogin"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_ui"

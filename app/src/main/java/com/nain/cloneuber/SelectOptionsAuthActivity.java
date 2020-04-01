@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -32,10 +34,22 @@ public class SelectOptionsAuthActivity extends AppCompatActivity {
                 gotoLogin();
             }
         });
+
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoRegister();
+            }
+        });
     }
 
     private void gotoLogin() {
         Intent intent = new Intent(SelectOptionsAuthActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    private void gotoRegister()  {
+        Intent intent = new Intent(SelectOptionsAuthActivity.this, RegisterActivity.class);
         startActivity(intent);
     }
 }
