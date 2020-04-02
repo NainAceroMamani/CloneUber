@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = mTextInputPassword.getText().toString();
 
         if(!email.isEmpty() && !password.isEmpty()) {
-            if(password.length() > 6) {
+            if(password.length() >= 6) {
                 // enviamos los datos a firebase y mostramos el dialogo de espere
                 mDialog.show();
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

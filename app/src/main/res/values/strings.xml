@@ -22,4 +22,7 @@
     <string name="error_password">La contraseña debe tener más de 6 carácteres</string>
     <string name="error_esEmpty">La contraseña y el email son obligatorias</string>
     <string name="txt_message_login">Espere un momento</string>
+    <string name="error_validate_register">Ingresar todos los campos</string>
+    <string name="error_register_user">No se pudo registrar al usuario</string>
+    <string name="register_success">Registro exitoso!</string>
 </resources>

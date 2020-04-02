@@ -71,6 +71,7 @@
                 android:textStyle="bold"/>
 
             <EditText
+                android:id="@+id/txtInputNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
@@ -87,6 +88,7 @@
                 android:textStyle="bold"/>
 
             <EditText
+                android:id="@+id/txtInputEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -103,6 +105,7 @@
                 android:textStyle="bold"/>
 
             <EditText
+                android:id="@+id/txtInputPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
@@ -123,6 +126,7 @@
         android:elevation="10dp">
 
         <Button
+            android:id="@+id/btnRegisterSave"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_ui"
