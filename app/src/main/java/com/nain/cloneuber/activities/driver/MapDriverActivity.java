@@ -1,6 +1,7 @@
 package com.nain.cloneuber.activities.driver;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,9 +13,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -48,6 +51,8 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
     private LocationRequest mLocationRequest;
     private FusedLocationProviderClient mFusedLocation; // para poder iniciar o detener la ubicación
     private final static int LOCATION_REQUEST_CODE = 1; // saber si deberia solicitar permisos o no del gps
+
+    private final static int SETTINGS_REQUEST_CODE = 2;
 
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -113,8 +118,14 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // preguntar si consedio los permisos
                 if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                    // obtenemos la ubicación actualizada y en tiempo real
-                    mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                    // preguntamos si tiene activado su gps
+                    if(gpsActived()) {
+                        // obtenemos la ubicación actualizada y en tiempo real
+                        mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                    }else {
+                        // mostramos el alert Dialog
+                        showAlertDialogGPS();
+                    }
                 } else {
                     checkLocationPermission();
                 }
@@ -124,22 +135,73 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+    // sobreescribimos este metodo -- para que el usuario active su gps cuando inicia su aplicación
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SETTINGS_REQUEST_CODE && gpsActived()) {
+            // significa que si activo su gps
+            mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // activamos la posición
+        }else {
+                // mostramos el alert Dialog
+               showAlertDialogGPS();
+        }
+    }
+
+    // mostrar alert dialog para que vaya a la configuracion para que lo active
+    private void showAlertDialogGPS() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Por favor activa tu ubicación para continuar")
+                .setPositiveButton("Configuraciones", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // esperara hasta que el usuario realize una acción -- espara asta que l usuario active el gps
+                        // esto se mostrara siempre hasta que active su gps
+                        startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), SETTINGS_REQUEST_CODE);
+                    }
+                }).create().show();
+    }
+
+    // conocer si el usuario tiene o no gps actuvado
+    private boolean gpsActived() {
+        // si tiene el gps activado return true
+        boolean isActive = false;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            isActive = true;
+        }
+        return isActive;
+    }
+
     // metodo para el escuchador de nuestra aplicación => lo ejecutamos en el onMapReady
     private void startLocation(){
         // verificamos que la version de android sea mayor a machMelon
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // preguntar si los permisson ya estan consedidos
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                // obtenemos la ubicación actualizada y en tiempo real
-                mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
-            }else {
+                // preguntamos si tiene activado su gps
+                if(gpsActived()) {
+                    // obtenemos la ubicación actualizada y en tiempo real
+                    mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                }else {
+                    // mostramos el alert Dialog
+                    showAlertDialogGPS();
+                }
+             }else {
                 // si no estan los permisos consedidos llamamos al Dialog
                 checkLocationPermission();
             }
 
         }else {
-            // ejecutamos defrente se supone que consedio cuando instalo el app , android inferior
-            mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper());
+            // preguntamos si tiene activado su gps
+            if(gpsActived()) {
+                // obtenemos la ubicación actualizada y en tiempo real
+                mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+            }else {
+                // mostramos el alert Dialog
+                showAlertDialogGPS();
+            }
         }
 
     }
