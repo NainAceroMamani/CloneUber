@@ -1,11 +1,11 @@
-package com.nain.cloneuber;
+package com.nain.cloneuber.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +15,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.client.MapClientActivity;
+import com.nain.cloneuber.activities.client.RegisterActivity;
+import com.nain.cloneuber.activities.driver.MapDriverActivity;
+import com.nain.cloneuber.activities.driver.RegisterDriverActivity;
+import com.nain.cloneuber.providers.AuthProvider;
 
 import dmax.dialog.SpotsDialog;
 
@@ -30,9 +32,9 @@ public class LoginActivity extends AppCompatActivity {
     ImageButton btnLogin;
     TextView tvRegister;
 
-    FirebaseAuth mAuth;
-    DatabaseReference mDatabase;
+    AuthProvider mAuthProvider;
 
+    SharedPreferences mPref;
     AlertDialog mDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         mTextInputPassword = findViewById(R.id.txtInputPassword);
         mButtonLogin = findViewById(R.id.btnSendLogin);
 
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuthProvider = new AuthProvider();
 
         tvRegister = findViewById(R.id.tvRegister);
         tvRegister.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +72,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // instanciamos el mDialog
         mDialog = new SpotsDialog.Builder().setContext(LoginActivity.this).setMessage(R.string.txt_message_login).build();
+
+        mPref = getApplicationContext().getSharedPreferences("typeUser", MODE_PRIVATE);
     }
 
     private void gotoRegister() {
@@ -86,12 +89,24 @@ public class LoginActivity extends AppCompatActivity {
             if(password.length() >= 6) {
                 // enviamos los datos a firebase y mostramos el dialogo de espere
                 mDialog.show();
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                mAuthProvider.login(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         // que aremos cuando nos devuelva la respuesta
                         if (task.isSuccessful()) {
                             Toast.makeText(LoginActivity.this, R.string.message_success_login, Toast.LENGTH_SHORT).show();
+                            String user = mPref.getString("user", "");
+                            if(user.equals("client")) {
+                                Intent intent = new Intent(LoginActivity.this, MapClientActivity.class);
+                                // nos aseguramos que counado precione el boton de atras no me lleve al registro sino se quede en el mapa
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            } else if(user.equals("driver")) {
+                                Intent intent = new Intent(LoginActivity.this, MapDriverActivity.class);
+                                // nos aseguramos que counado precione el boton de atras no me lleve al registro sino se quede en el mapa
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
                         } else {
                             Toast.makeText(LoginActivity.this, R.string.error_credentials, Toast.LENGTH_LONG).show();
                         }

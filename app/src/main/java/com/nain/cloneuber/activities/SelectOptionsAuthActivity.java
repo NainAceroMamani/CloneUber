@@ -1,29 +1,33 @@
-package com.nain.cloneuber;
+package com.nain.cloneuber.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.client.RegisterActivity;
+import com.nain.cloneuber.activities.driver.RegisterDriverActivity;
+import com.nain.cloneuber.includes.MyToolbar;
 
 public class SelectOptionsAuthActivity extends AppCompatActivity {
 
     Button btnLogin, btnRegister;
-    Toolbar mToolbar; // para menu en la parte superior para volver hacia atras
+    SharedPreferences mPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_options_auth);
 
-        mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(R.string.txt_option);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // clase creada en includes para mostrar el Toolbar
+        MyToolbar.show(this, getString(R.string.txt_option), true);
+
+        mPref = getApplicationContext().getSharedPreferences("typeUser", MODE_PRIVATE);
+
 
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
@@ -49,7 +53,13 @@ public class SelectOptionsAuthActivity extends AppCompatActivity {
     }
 
     private void gotoRegister()  {
-        Intent intent = new Intent(SelectOptionsAuthActivity.this, RegisterActivity.class);
-        startActivity(intent);
+        String typeUser = mPref.getString("user", "");
+        if(typeUser.equals("client")) {
+            Intent intent = new Intent(SelectOptionsAuthActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        } else if(typeUser.equals("driver")) {
+            Intent intent = new Intent(SelectOptionsAuthActivity.this, RegisterDriverActivity.class);
+            startActivity(intent);
+        }
     }
 }

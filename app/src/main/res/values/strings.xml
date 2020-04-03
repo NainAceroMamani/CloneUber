@@ -9,12 +9,12 @@
     <string name="text_option2">REGISTRARME AHORA</string>
     <string name="txt_login">Login</string>
     <string name="txt_nameUber">Uber Eats</string>
-    <string name="txt_correo">Correo</string>
+    <string name="txt_correo">Correo Electrónico</string>
     <string name="txt_password">Contraseña</string>
     <string name="txt_register">Aún no te has registrado?</string>
     <string name="txt_registrarse">Registrarse</string>
-    <string name="txt_nombre">Nombre</string>
-    <string name="txt_enviar">Enviar</string>
+    <string name="txt_nombre">Nombre Completo</string>
+    <string name="txt_enviar">Guardar</string>
     <string name="txt_sesion">Iniciar Sesión</string>
     <string name="txt_option">Seleccione una opción</string>
     <string name="error_credentials">El correo o la contraseña son incorrectos</string>
@@ -25,4 +25,9 @@
     <string name="error_validate_register">Ingresar todos los campos</string>
     <string name="error_register_user">No se pudo registrar al usuario</string>
     <string name="register_success">Registro exitoso!</string>
+    <string name="txt_cliente">CLIENTE</string>
+    <string name="txt_conductor">CONDUCTOR</string>
+    <string name="txt_marca_vehicle">Marca de Vehículo</string>
+    <string name="txt_placa_vehicle">Placa del Vehículo</string>
+    <string name="txt_next">Siguiente</string>
 </resources>

@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.client.RegisterActivity">
+    tools:context=".activities.driver.RegisterDriverActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/bgHeader"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="100dp"
         android:background="@drawable/header_register"
         android:theme="@style/ToolbarTheme"
         android:elevation="5dp"/>
@@ -24,7 +24,7 @@
         android:textStyle="bold"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
-        android:text="@string/txt_cliente"/>
+        android:text="@string/txt_conductor"/>
 
     <ImageView
         android:id="@+id/circle1"
@@ -47,6 +47,7 @@
 
 
     <androidx.cardview.widget.CardView
+        android:visibility="visible"
         android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -103,7 +104,6 @@
                 android:textSize="14sp"
                 android:textColor="@color/color_Purple"
                 android:textStyle="bold"/>
-
             <EditText
                 android:id="@+id/txtInputPassword"
                 android:layout_width="match_parent"
@@ -115,6 +115,7 @@
     </androidx.cardview.widget.CardView>
 
     <RelativeLayout
+        android:id="@+id/rlRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/cv"
@@ -130,12 +131,66 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_ui"
-            android:text="@string/txt_enviar"
+            android:text="@string/txt_next"
             android:textAllCaps="false"
             android:textColor="@color/colorWhite"/>
     </RelativeLayout>
 
+    <androidx.cardview.widget.CardView
+        android:visibility="gone"
+        android:id="@+id/cv2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bgHeader"
+        app:cardCornerRadius="10dp"
+        android:layout_margin="20dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingBottom="50dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txt_marca_vehicle"
+                android:layout_margin="10dp"
+                android:textSize="14sp"
+                android:textColor="@color/color_Purple"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/txtInputMarca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/txt_placa_vehicle"
+                android:layout_margin="10dp"
+                android:textSize="14sp"
+                android:textColor="@color/color_Purple"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:id="@+id/txtInputPlaca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
     <RelativeLayout
+        android:id="@+id/rlImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/cv"

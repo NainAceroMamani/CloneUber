@@ -9,11 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".RegisterActivity" android:parentActivityName=".SelectOptionsAuthActivity"/>
-        <activity android:name=".SelectOptionsAuthActivity"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.driver.MapDriverActivity"></activity>
+        <activity android:name=".activities.client.MapClientActivity" />
+        <activity
+            android:name=".activities.driver.RegisterDriverActivity"
+            android:parentActivityName=".activities.SelectOptionsAuthActivity" />
+        <activity android:name=".activities.LoginActivity" />
+        <activity
+            android:name=".activities.client.RegisterActivity"
+            android:parentActivityName=".activities.SelectOptionsAuthActivity" />
+        <activity
+            android:name=".activities.SelectOptionsAuthActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
