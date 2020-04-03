@@ -31,4 +31,6 @@
     <string name="txt_placa_vehicle">Placa del Vehículo</string>
     <string name="txt_next">Siguiente</string>
     <string name="txt_cerrar_sesion">Cerrar Sesión</string>
+    <string name="txt_error_location">Proporcionar los permisos para continuar</string>
+    <string name="txt_message_permission">Esta Aplicación requiere de los permisos de ubicación para continuar</string>
 </resources>
