@@ -35,6 +35,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.google.firebase:firebase-database:19.2.1'
 
+    // google maps
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+
     // dependencia para idalog al momento de hacer login
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
 
