@@ -32,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
@@ -94,8 +95,12 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         // habilitar el api de google
         mMap = googleMap;
         // tipo de mapa
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        boolean success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.estilos_mapa));
+        if(!success) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
+        mMap.setMyLocationEnabled(true); // ubicacion exacta
 
         // instaciamos el gps
         mLocationRequest = new LocationRequest();

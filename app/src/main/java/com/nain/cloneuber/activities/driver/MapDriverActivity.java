@@ -20,6 +20,8 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -31,8 +33,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.activities.client.MapClientActivity;
@@ -54,6 +61,11 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
 
     private final static int SETTINGS_REQUEST_CODE = 2;
 
+    private Marker mMarker; // marcador para la img
+
+    private Button mbtnConnect;
+    private boolean mIsConnect = false; // saber si estamos conectados
+
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -62,12 +74,22 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
             // contexto de la aplicación
             for(Location location: locationResult.getLocations()) {
                 if(getApplicationContext() != null) {
+                    // eliminamos el marcador anterior para que no se repita
+                    if(mMarker != null) {
+                        mMarker.remove();
+                    }
+                    // añadimos el marcador de driver
+                    mMarker = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(location.getLatitude(), location.getLongitude())
+                    ).title("Su posición")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver))
+                    );
                     // obtenemos la localización del usuario en tiempo real
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
                                     // posición actual
                                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                                    .zoom(15f)
+                                    .zoom(16.7f)
                                     .build()
                     ));
                 }
@@ -89,6 +111,20 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
         mAtuchProvider = new AuthProvider();
+
+        // boton para conectar o desconectar gps
+        mbtnConnect = findViewById(R.id.btnConnect);
+        mbtnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mIsConnect) {
+                    disconnect();
+                }else {
+                    // establecemos a=la coneción al gps
+                    startLocation();
+                }
+            }
+        });
     }
 
     @Override
@@ -96,8 +132,13 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         // habilitar el api de google
         mMap = googleMap;
         // tipo de mapa
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        boolean success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.estilos_mapa));
+        if(!success) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
+        mMap.setMyLocationEnabled(false); // ubicacion exacta => cargamos el icono
 
         // instaciamos el gps
         mLocationRequest = new LocationRequest();
@@ -174,6 +215,16 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         return isActive;
     }
 
+    // metodo para desconectar gps
+    private void disconnect(){
+        mbtnConnect.setText(R.string.txt_conectarse);
+        mIsConnect = false;
+
+        if(mFusedLocation != null) {
+            mFusedLocation.removeLocationUpdates(mLocationCallback); // deja de escuchar los eventos el mLocationCallback
+        }
+    }
+
     // metodo para el escuchador de nuestra aplicación => lo ejecutamos en el onMapReady
     private void startLocation(){
         // verificamos que la version de android sea mayor a machMelon
@@ -182,6 +233,10 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
                 // preguntamos si tiene activado su gps
                 if(gpsActived()) {
+                    // cambiamos propiedades del boton
+                    mbtnConnect.setText(R.string.txt_desconectarse);
+                    mIsConnect = true;
+
                     // obtenemos la ubicación actualizada y en tiempo real
                     mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
                 }else {
@@ -196,6 +251,9 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         }else {
             // preguntamos si tiene activado su gps
             if(gpsActived()) {
+                // cambiamos propiedades del boton
+                mbtnConnect.setText(R.string.txt_desconectarse);
+                mIsConnect = true;
                 // obtenemos la ubicación actualizada y en tiempo real
                 mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
             }else {
