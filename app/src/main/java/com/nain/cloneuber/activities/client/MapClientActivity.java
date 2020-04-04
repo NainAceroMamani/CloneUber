@@ -30,9 +30,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
@@ -53,6 +56,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
     private final static int SETTINGS_REQUEST_CODE = 2;
 
+    private Marker mMarker; // marcador para la img
+
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -61,12 +66,23 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             // contexto de la aplicación
             for(Location location: locationResult.getLocations()) {
                 if(getApplicationContext() != null) {
+
+                    // eliminamos el marcador anterior para que no se repita
+                    if(mMarker != null) {
+                        mMarker.remove();
+                    }
+                    // añadimos el marcador de driver
+                    mMarker = mMap.addMarker(new MarkerOptions().position(
+                            new LatLng(location.getLatitude(), location.getLongitude())
+                            ).title("Su posición")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_location))
+                    );
                     // obtenemos la localización del usuario en tiempo real
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
                                     // posición actual
                                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                                    .zoom(15f)
+                                    .zoom(16.7f)
                                     .build()
                     ));
                 }
