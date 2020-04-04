@@ -128,7 +128,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                 if(mIsConnect) {
                     disconnect();
                 }else {
-                    // establecemos a=la coneción al gps
+                    // establecemos la coneción al gps
                     startLocation();
                 }
             }
@@ -161,8 +161,6 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         mLocationRequest.setFastestInterval(1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY); // para que use el gps con la mayor presión
         mLocationRequest.setSmallestDisplacement(5);
-
-        startLocation();
     }
 
     // permisos de la aplicación
@@ -339,6 +337,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     private void logout() {
+        disconnect();
         mAtuchProvider.logout();
         Intent intent = new Intent(MapDriverActivity.this, MainActivity.class);
         startActivity(intent);
