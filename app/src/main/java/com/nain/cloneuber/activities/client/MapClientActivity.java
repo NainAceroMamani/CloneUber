@@ -21,6 +21,8 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -37,10 +39,15 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.database.DatabaseError;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.GeoFireProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapClientActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -58,6 +65,14 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
     private Marker mMarker; // marcador para la img
 
+    // para almacenar la positon del cliente
+    private LatLng mCurrentLatlng;
+    private GeoFireProvider mGeofireProvider;
+
+    // para añadir marcadores de conductores
+    private List<Marker> mDriversMarkers = new ArrayList<>();
+    private boolean mIsFirstTime = true; // para que solo entre una vez
+
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -66,6 +81,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             // contexto de la aplicación
             for(Location location: locationResult.getLocations()) {
                 if(getApplicationContext() != null) {
+                    mCurrentLatlng = new LatLng(location.getLatitude(), location.getLongitude());
 
                     // eliminamos el marcador anterior para que no se repita
                     if(mMarker != null) {
@@ -82,13 +98,16 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                             new CameraPosition.Builder()
                                     // posición actual
                                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                                    .zoom(16.7f)
+                                    .zoom(16f)
                                     .build()
                     ));
+                    if(mIsFirstTime) {
+                        mIsFirstTime = false;
+                        getActivityDrivers();
+                    }
                 }
             }
         }
-
     };
 
     @Override
@@ -104,6 +123,65 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
         mAtuchProvider = new AuthProvider();
+        mGeofireProvider = new GeoFireProvider();
+    }
+
+    private void getActivityDrivers() {
+        // trae todos los conductores
+        mGeofireProvider.getActionsDrivers(mCurrentLatlng).addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override // metodo para ir añadiendo los marcadores a los conductores que se conecten
+            public void onKeyEntered(String key, GeoLocation location) {
+                for (Marker marker: mDriversMarkers) {
+                    // recorremos todos los marcadores para verificar si no hay considencia con el marcador actual para agregarlo
+                    if(marker.getTag() != null) {
+                        if(marker.getTag().equals(key)) {
+                            return;
+                        }
+                    }
+                }
+                LatLng driverLatLng = new LatLng(location.latitude, location.longitude);
+                Marker marker = mMap.addMarker(new MarkerOptions().position(driverLatLng).title(getString(R.string.txt_driver_disponible)).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_driver)));
+                marker.setTag(key); // para que no se repita el marcador
+                mDriversMarkers.add(marker);
+            }
+
+            @Override // eliminar los marcadores de los conductores que se desconectan
+            public void onKeyExited(String key) {
+                for (Marker marker: mDriversMarkers) {
+                    // encuentra el marcador que conside con el key
+                    if(marker.getTag() != null) {
+                        if(marker.getTag().equals(key)) {
+                            marker.remove();
+                            mDriversMarkers.remove(marker);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            @Override // actualizam os laas ubicaciones de los conductores
+            public void onKeyMoved(String key, GeoLocation location) {
+                for (Marker marker: mDriversMarkers) {
+                    // encuentra el marcador que conside con el key
+                    if(marker.getTag() != null) {
+                        if(marker.getTag().equals(key)) {
+                            marker.setPosition(new LatLng(location.latitude, location.longitude));
+                            return;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+
+            }
+
+            @Override
+            public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
     }
 
     @Override

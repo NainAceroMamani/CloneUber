@@ -95,7 +95,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                             new CameraPosition.Builder()
                                     // posición actual
                                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                                    .zoom(16.7f)
+                                    .zoom(17f)
                                     .build()
                     ));
                     updateLocation();
