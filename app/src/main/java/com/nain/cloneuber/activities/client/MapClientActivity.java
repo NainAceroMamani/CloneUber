@@ -100,7 +100,6 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
-        mMap.setMyLocationEnabled(true); // ubicacion exacta
 
         // instaciamos el gps
         mLocationRequest = new LocationRequest();
@@ -125,6 +124,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                     if(gpsActived()) {
                         // obtenemos la ubicación actualizada y en tiempo real
                         mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                        mMap.setMyLocationEnabled(true); // ubicacion exacta
                     }else {
                         // mostramos el alert Dialog
                         showAlertDialogGPS();
@@ -145,6 +145,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         if(requestCode == SETTINGS_REQUEST_CODE && gpsActived()) {
             // significa que si activo su gps
             mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // activamos la posición
+            mMap.setMyLocationEnabled(true); // ubicacion exacta
         }else {
             // mostramos el alert Dialog
             showAlertDialogGPS();
@@ -187,6 +188,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                 if(gpsActived()) {
                     // obtenemos la ubicación actualizada y en tiempo real
                     mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                    mMap.setMyLocationEnabled(true); // ubicacion exacta
                 }else {
                     // mostramos el alert Dialog
                     showAlertDialogGPS();
@@ -201,12 +203,12 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             if(gpsActived()) {
                 // obtenemos la ubicación actualizada y en tiempo real
                 mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                mMap.setMyLocationEnabled(true); // ubicacion exacta
             }else {
                 // mostramos el alert Dialog
                 showAlertDialogGPS();
             }
         }
-
     }
 
     // metodo pra validar en caso de que el usuario no acepte los permisos

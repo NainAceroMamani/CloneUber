@@ -138,7 +138,6 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
-        mMap.setMyLocationEnabled(false); // ubicacion exacta => cargamos el icono
 
         // instaciamos el gps
         mLocationRequest = new LocationRequest();
@@ -163,6 +162,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                     if(gpsActived()) {
                         // obtenemos la ubicación actualizada y en tiempo real
                         mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                        mMap.setMyLocationEnabled(true); // ubicacion exacta => cargamos el icono
                     }else {
                         // mostramos el alert Dialog
                         showAlertDialogGPS();
@@ -183,6 +183,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         if(requestCode == SETTINGS_REQUEST_CODE && gpsActived()) {
             // significa que si activo su gps
             mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // activamos la posición
+            mMap.setMyLocationEnabled(true); // ubicacion exacta => cargamos el icono
         }else {
                 // mostramos el alert Dialog
                showAlertDialogGPS();
@@ -239,6 +240,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
 
                     // obtenemos la ubicación actualizada y en tiempo real
                     mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                    mMap.setMyLocationEnabled(true); // ubicacion exacta => cargamos el icono
                 }else {
                     // mostramos el alert Dialog
                     showAlertDialogGPS();
@@ -256,6 +258,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                 mIsConnect = true;
                 // obtenemos la ubicación actualizada y en tiempo real
                 mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // Looper.myLooper() => devuelve el hilo actual
+                mMap.setMyLocationEnabled(true); // ubicacion exacta => cargamos el icono
             }else {
                 // mostramos el alert Dialog
                 showAlertDialogGPS();
