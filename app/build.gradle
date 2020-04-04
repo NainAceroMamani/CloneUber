@@ -41,6 +41,9 @@ dependencies {
     //gps
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
+    // para guardar la localización del conductor en tiempo real
+    implementation 'com.firebase:geofire-android:2.2.0'
+
     // dependencia para idalog al momento de hacer login
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
 

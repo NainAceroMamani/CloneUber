@@ -22,18 +22,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,9 +41,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
-import com.nain.cloneuber.activities.client.MapClientActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.GeoFireProvider;
 
 // interfaz para mapas
 public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -66,6 +65,10 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
     private Button mbtnConnect;
     private boolean mIsConnect = false; // saber si estamos conectados
 
+    // para almacenar la positon del conductor
+    private LatLng mCurrentLatlng;
+    private GeoFireProvider mGeofireProvider;
+
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -74,6 +77,9 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
             // contexto de la aplicación
             for(Location location: locationResult.getLocations()) {
                 if(getApplicationContext() != null) {
+
+                    mCurrentLatlng = new LatLng(location.getLatitude(), location.getLongitude());
+
                     // eliminamos el marcador anterior para que no se repita
                     if(mMarker != null) {
                         mMarker.remove();
@@ -92,6 +98,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                                     .zoom(16.7f)
                                     .build()
                     ));
+                    updateLocation();
                 }
             }
         }
@@ -111,6 +118,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
         mAtuchProvider = new AuthProvider();
+        mGeofireProvider = new GeoFireProvider();
 
         // boton para conectar o desconectar gps
         mbtnConnect = findViewById(R.id.btnConnect);
@@ -125,6 +133,14 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             }
         });
+    }
+
+    // guardar la ubicación del driver
+    private void updateLocation(){
+        // preguntamos si existe la sesion
+        if(mAtuchProvider.exitSesion() && mCurrentLatlng != null) {
+            mGeofireProvider.savaLocation(mAtuchProvider.getId(), mCurrentLatlng);
+        }
     }
 
     @Override
@@ -218,11 +234,18 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
 
     // metodo para desconectar gps
     private void disconnect(){
-        mbtnConnect.setText(R.string.txt_conectarse);
-        mIsConnect = false;
-
         if(mFusedLocation != null) {
+            mbtnConnect.setText(R.string.txt_conectarse);
+            mIsConnect = false;
             mFusedLocation.removeLocationUpdates(mLocationCallback); // deja de escuchar los eventos el mLocationCallback
+
+            // eliminamos la posición de la base de datos => validar si existe sesión
+            if(mAtuchProvider.exitSesion()) {
+                mGeofireProvider.removeLocation(mAtuchProvider.getId());
+            }
+        } else {
+            // significa que no tiene activado el gps o esta sin permisos
+            Toast.makeText(this, R.string.txt_error_gps_disconect, Toast.LENGTH_SHORT).show();
         }
     }
 

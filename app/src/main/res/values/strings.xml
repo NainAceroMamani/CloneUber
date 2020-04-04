@@ -35,4 +35,5 @@
     <string name="txt_message_permission">Esta Aplicación requiere de los permisos de ubicación para continuar</string>
     <string name="txt_conectarse">Conectarse</string>
     <string name="txt_desconectarse">Desconectarse</string>
+    <string name="txt_error_gps_disconect">No te puedes desconectar</string>
 </resources>
