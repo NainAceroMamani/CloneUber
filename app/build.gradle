@@ -44,7 +44,10 @@ dependencies {
     // para guardar la localización del conductor en tiempo real
     implementation 'com.firebase:geofire-android:2.2.0'
 
-    // dependencia para idalog al momento de hacer login
+    // para buscador de google
+    implementation 'com.google.android.libraries.places:places:2.2.0'
+
+    // dependencia para dialog al momento de hacer login
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
 
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'

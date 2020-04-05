@@ -1,5 +1,4 @@
 package com.nain.cloneuber.activities.client;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -18,11 +17,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -38,6 +39,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.internal.ui.AutocompleteImplFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DatabaseError;
 import com.nain.cloneuber.R;
@@ -46,7 +53,9 @@ import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MapClientActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -72,6 +81,15 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
     // para añadir marcadores de conductores
     private List<Marker> mDriversMarkers = new ArrayList<>();
     private boolean mIsFirstTime = true; // para que solo entre una vez
+
+    // para el buscador
+    private AutocompleteSupportFragment mAutoComplete;
+    private PlacesClient mPlaces;
+
+    // para guardar el lugar
+    private String mOrigin;         // nombre del lugar
+    private LatLng mOriginLatLong;  // latitud y longitud del lugar
+    // habilitar places de google console
 
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -124,6 +142,35 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
         mAtuchProvider = new AuthProvider();
         mGeofireProvider = new GeoFireProvider();
+
+        // buscador
+        if(!Places.isInitialized()){
+            // saber si no esta inicializado
+            Places.initialize(getApplicationContext(), getResources().getString(R.string.google_maps_key)); // el api key de google
+        }
+
+        // instanciamos el buscador
+        mPlaces = Places.createClient(this);
+        mAutoComplete = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placesAucompleteOrigin);
+        mAutoComplete.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
+        mAutoComplete.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            // return la info del lugar
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                mOrigin = place.getName();
+                mOriginLatLong = place.getLatLng();
+
+                Log.d("PLACES", "Name "+ mOrigin);
+                Log.d("PLACES", "Lat "+ mOriginLatLong.latitude);
+                Log.d("PLACES", "Lon "+ mOriginLatLong.longitude);
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
+
     }
 
     private void getActivityDrivers() {
