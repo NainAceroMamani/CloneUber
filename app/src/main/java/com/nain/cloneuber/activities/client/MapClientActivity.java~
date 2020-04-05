@@ -302,6 +302,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
+        mMap.setMyLocationEnabled(true); // punto en gps
         mMap.setOnCameraIdleListener(mCameraListener);
 
         // instaciamos el gps
