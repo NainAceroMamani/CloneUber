@@ -37,4 +37,6 @@
     <string name="txt_desconectarse">Desconectarse</string>
     <string name="txt_error_gps_disconect">No te puedes desconectar</string>
     <string name="txt_driver_disponible">Conductor disponible</string>
+    <string name="txt_origen">Lugar de Recogida</string>
+    <string name="txt_destino">Destino</string>
 </resources>

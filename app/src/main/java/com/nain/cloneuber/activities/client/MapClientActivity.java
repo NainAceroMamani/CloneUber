@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -86,10 +88,21 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
     private AutocompleteSupportFragment mAutoComplete;
     private PlacesClient mPlaces;
 
+    // para buscar destino
+    private AutocompleteSupportFragment mAutoCompleteDestination;
+
     // para guardar el lugar
     private String mOrigin;         // nombre del lugar
     private LatLng mOriginLatLong;  // latitud y longitud del lugar
+
+    // para guardar el destino
+    private String mDestination;         // nombre del lugar
+    private LatLng mDestinationLatLong;  // latitud y longitud del lugar
+
     // habilitar places de google console
+
+    // desplazar por el mapa
+    private GoogleMap.OnCameraIdleListener mCameraListener;
 
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -102,15 +115,21 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                     mCurrentLatlng = new LatLng(location.getLatitude(), location.getLongitude());
 
                     // eliminamos el marcador anterior para que no se repita
+                    /*
                     if(mMarker != null) {
                         mMarker.remove();
                     }
+                    */
+
                     // añadimos el marcador de driver
+                    /*
                     mMarker = mMap.addMarker(new MarkerOptions().position(
                             new LatLng(location.getLatitude(), location.getLongitude())
                             ).title("Su posición")
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_location))
                     );
+                    */
+
                     // obtenemos la localización del usuario en tiempo real
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
@@ -153,6 +172,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         mPlaces = Places.createClient(this);
         mAutoComplete = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placesAucompleteOrigin);
         mAutoComplete.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
+        mAutoComplete.setHint(getString(R.string.txt_origen));
         mAutoComplete.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             // return la info del lugar
             @Override
@@ -171,6 +191,47 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             }
         });
 
+        // Destino
+        mAutoCompleteDestination = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placesAucompleteDestino);
+        mAutoCompleteDestination.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
+        mAutoCompleteDestination.setHint(getString(R.string.txt_destino));
+        mAutoCompleteDestination.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            // return la info del lugar
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                mDestination = place.getName();
+                mDestinationLatLong = place.getLatLng();
+
+                Log.d("PLACES", "Name "+ mDestination);
+                Log.d("PLACES", "Lat "+ mDestinationLatLong.latitude);
+                Log.d("PLACES", "Lon "+ mDestinationLatLong.longitude);
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
+
+        // desplazar por el mapa => cuando el usuario cambie la posición en el Mapa
+        mCameraListener = new GoogleMap.OnCameraIdleListener() {
+            // method cuando el usuario cambie su posición de la camara
+            @Override
+            public void onCameraIdle() {
+                try {
+                    Geocoder geocoder = new Geocoder(MapClientActivity.this);
+                    mOriginLatLong = mMap.getCameraPosition().target;   // obtener latitud y ongitud cuando el usuario se mueve
+                    List<Address> addressList = geocoder.getFromLocation(mOriginLatLong.latitude, mOriginLatLong.longitude,1); // solo retorna un resultado
+                    String city = addressList.get(0).getLocality(); // ciudad en la que me encuentro
+                    String country = addressList.get(0).getCountryName(); // pais en la que me encuentro
+                    String address = addressList.get(0).getAddressLine(0); // direccion en la que me encuentro
+                    mOrigin = address + " " + city;
+                    mAutoComplete.setText(address + " " + city);
+                } catch (Exception e){
+                    Log.d("Error : ",  "Mensaje de Error => "+ e.getLocalizedMessage());
+                }
+            }
+        };
     }
 
     private void getActivityDrivers() {
@@ -241,6 +302,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         }
         mMap.getUiSettings().setZoomControlsEnabled(true); // para mostrar el zoom
+        mMap.setMyLocationEnabled(true); // punto en gps
+        mMap.setOnCameraIdleListener(mCameraListener);
 
         // instaciamos el gps
         mLocationRequest = new LocationRequest();
@@ -287,7 +350,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             // significa que si activo su gps
             mFusedLocation.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.myLooper()); // activamos la posición
             mMap.setMyLocationEnabled(true); // ubicacion exacta
-        }else {
+        }else if(requestCode == SETTINGS_REQUEST_CODE && !gpsActived()) {
             // mostramos el alert Dialog
             showAlertDialogGPS();
         }

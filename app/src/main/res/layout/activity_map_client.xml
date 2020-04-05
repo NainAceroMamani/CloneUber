@@ -15,19 +15,51 @@
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_margin="10dp"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
-        app:cardCornerRadius="20dp">
+        android:layout_marginTop="10dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:orientation="vertical">
 
-        <fragment
-            android:id="@+id/placesAucompleteOrigin"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="5dp"
             android:layout_height="wrap_content"
-            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"/>
+            android:background="@color/colorWhite"
+            app:cardCornerRadius="20dp">
 
-    </androidx.cardview.widget.CardView>
+            <fragment
+                android:id="@+id/placesAucompleteOrigin"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:background="@color/colorWhite"
+            app:cardCornerRadius="20dp">
+
+            <fragment
+                android:id="@+id/placesAucompleteDestino"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"/>
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/user_location"
+        android:layout_gravity="center"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
