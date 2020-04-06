@@ -22,6 +22,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQueryEventListener;
@@ -106,6 +109,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
     // desplazar por el mapa
     private GoogleMap.OnCameraIdleListener mCameraListener;
 
+    private Button mbtnRequestDriver;
+
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -157,6 +162,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         setContentView(R.layout.activity_map_client);
         MyToolbar.show(this, "Cliente", false); // Toolbar pra el app instanciada de clase
 
+        mbtnRequestDriver = findViewById(R.id.btnRequestDriver);
         // instanciamos el mFusedLocation
         mFusedLocation = LocationServices.getFusedLocationProviderClient(this); // para poder iniciar o detener la ubicación
 
@@ -177,6 +183,28 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         instanceAutocompleteOrigin();
         instanceAutocompleteDestino();
         onCameraMove();
+
+        mbtnRequestDriver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestDriver();
+            }
+        });
+    }
+
+    private void requestDriver() {
+        // validar si seleccionó el lugar de destino y origen
+        if(mOriginLatLong != null && mDestinationLatLong != null) {
+            Intent intent = new Intent(MapClientActivity.this, DetailRequestActivity.class);
+            // pasar parametros
+            intent.putExtra("origin_lat", mOriginLatLong.latitude);
+            intent.putExtra("origin_lng", mOriginLatLong.longitude);
+            intent.putExtra("destino_lat", mDestinationLatLong.latitude);
+            intent.putExtra("destino_lng", mDestinationLatLong.longitude);
+            startActivity(intent);
+        }else {
+            Toast.makeText(this, R.string.txt_error_places, Toast.LENGTH_LONG).show();
+        }
     }
 
     // Metodo la limitación por busqueda

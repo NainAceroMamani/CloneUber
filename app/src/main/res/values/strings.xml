@@ -39,4 +39,8 @@
     <string name="txt_driver_disponible">Conductor disponible</string>
     <string name="txt_origen">Lugar de Recogida</string>
     <string name="txt_destino">Destino</string>
+    <string name="txt_solicitar_viaje">SOLICITAR AHORA</string>
+    <string name="txt_error_places">Debe seleccionar el lugar de recogida y el destino</string>
+    <string name="txt_place_origen">Origen: </string>
+    <string name="txt_place_destination">Destino: </string>
 </resources>
