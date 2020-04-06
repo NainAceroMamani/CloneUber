@@ -43,12 +43,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.internal.ui.AutocompleteImplFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.database.DatabaseError;
+import com.google.maps.android.SphericalUtil;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.includes.MyToolbar;
@@ -138,9 +140,11 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                                     .zoom(16f)
                                     .build()
                     ));
+                    // solo se ejecutará una vez cuando tenga bien definido su ubicación
                     if(mIsFirstTime) {
                         mIsFirstTime = false;
                         getActivityDrivers();
+                        limitSearch();
                     }
                 }
             }
@@ -170,6 +174,44 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
         // instanciamos el buscador
         mPlaces = Places.createClient(this);
+        instanceAutocompleteOrigin();
+        instanceAutocompleteDestino();
+        onCameraMove();
+    }
+
+    // Metodo la limitación por busqueda
+    private void limitSearch(){
+        LatLng northSide = SphericalUtil.computeOffset(mCurrentLatlng, 5000,0); // mCurrentLatlng => position , distancia 5 Km
+        LatLng sourthSide = SphericalUtil.computeOffset(mCurrentLatlng, 5000,180); // mCurrentLatlng => position , distancia 5 Km
+        mAutoComplete.setCountry("PE");
+        mAutoComplete.setLocationBias(RectangularBounds.newInstance(sourthSide, northSide));
+        mAutoCompleteDestination.setCountry("PE");
+        mAutoCompleteDestination.setLocationBias(RectangularBounds.newInstance(sourthSide,northSide));
+    }
+
+    private void onCameraMove(){
+        // desplazar por el mapa => cuando el usuario cambie la posición en el Mapa
+        mCameraListener = new GoogleMap.OnCameraIdleListener() {
+            // method cuando el usuario cambie su posición de la camara
+            @Override
+            public void onCameraIdle() {
+                try {
+                    Geocoder geocoder = new Geocoder(MapClientActivity.this);
+                    mOriginLatLong = mMap.getCameraPosition().target;   // obtener latitud y ongitud cuando el usuario se mueve
+                    List<Address> addressList = geocoder.getFromLocation(mOriginLatLong.latitude, mOriginLatLong.longitude,1); // solo retorna un resultado
+                    String city = addressList.get(0).getLocality(); // ciudad en la que me encuentro
+                    String country = addressList.get(0).getCountryName(); // pais en la que me encuentro
+                    String address = addressList.get(0).getAddressLine(0); // direccion en la que me encuentro
+                    mOrigin = address + " " + city;
+                    mAutoComplete.setText(address + " " + city);
+                } catch (Exception e){
+                    Log.d("Error : ",  "Mensaje de Error => "+ e.getLocalizedMessage());
+                }
+            }
+        };
+    }
+
+    private void instanceAutocompleteOrigin() {
         mAutoComplete = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placesAucompleteOrigin);
         mAutoComplete.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
         mAutoComplete.setHint(getString(R.string.txt_origen));
@@ -190,7 +232,9 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
             }
         });
+    }
 
+    private void instanceAutocompleteDestino() {
         // Destino
         mAutoCompleteDestination = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placesAucompleteDestino);
         mAutoCompleteDestination.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
@@ -212,26 +256,6 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
             }
         });
-
-        // desplazar por el mapa => cuando el usuario cambie la posición en el Mapa
-        mCameraListener = new GoogleMap.OnCameraIdleListener() {
-            // method cuando el usuario cambie su posición de la camara
-            @Override
-            public void onCameraIdle() {
-                try {
-                    Geocoder geocoder = new Geocoder(MapClientActivity.this);
-                    mOriginLatLong = mMap.getCameraPosition().target;   // obtener latitud y ongitud cuando el usuario se mueve
-                    List<Address> addressList = geocoder.getFromLocation(mOriginLatLong.latitude, mOriginLatLong.longitude,1); // solo retorna un resultado
-                    String city = addressList.get(0).getLocality(); // ciudad en la que me encuentro
-                    String country = addressList.get(0).getCountryName(); // pais en la que me encuentro
-                    String address = addressList.get(0).getAddressLine(0); // direccion en la que me encuentro
-                    mOrigin = address + " " + city;
-                    mAutoComplete.setText(address + " " + city);
-                } catch (Exception e){
-                    Log.d("Error : ",  "Mensaje de Error => "+ e.getLocalizedMessage());
-                }
-            }
-        };
     }
 
     private void getActivityDrivers() {
