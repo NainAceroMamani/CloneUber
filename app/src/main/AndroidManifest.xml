@@ -12,7 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.client.RequestDriverActivity"></activity>
+
+<!--        para las notificaciones de fireabse-->
+        <service android:name=".services.MyFirebaseMessagingClient" >
+            <intent-filter >
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <activity android:name=".activities.client.RequestDriverActivity"/>
         <activity
             android:name=".activities.client.DetailRequestActivity"
             android:parentActivityName=".activities.client.MapClientActivity" />
