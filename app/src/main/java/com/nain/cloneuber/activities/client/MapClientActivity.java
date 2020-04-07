@@ -290,7 +290,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
 
     private void getActivityDrivers() {
         // trae todos los conductores
-        mGeofireProvider.getActionsDrivers(mCurrentLatlng).addGeoQueryEventListener(new GeoQueryEventListener() {
+        mGeofireProvider.getActionsDrivers(mCurrentLatlng, 10).addGeoQueryEventListener(new GeoQueryEventListener() {
             @Override // metodo para ir añadiendo los marcadores a los conductores que se conecten
             public void onKeyEntered(String key, GeoLocation location) {
                 for (Marker marker: mDriversMarkers) {

@@ -47,4 +47,6 @@
     <string name="txt_distance">Distancia: </string>
     <string name="txt_buscando_conductor">BUSCANDO CONDUCTOR...</string>
     <string name="txt_cancel_viaje">CANCELAR VIAJE</string>
+    <string name="txt_driver_encontrado">CONDUCTOR ENCONTRADO\nESPERANDO RESPUESTA</string>
+    <string name="txt_not_driver">No se encontro un Conductor</string>
 </resources>

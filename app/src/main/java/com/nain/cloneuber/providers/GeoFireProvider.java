@@ -22,14 +22,14 @@ public class GeoFireProvider {
         mGeofire.setLocation(idDriver, new GeoLocation(latLng.latitude, latLng.longitude));
     }
 
-    // eliminr ubicación de la bd
+    // eliminr ubicación de la bd de fireabse
     public void removeLocation(String idDriver){
         mGeofire.removeLocation(idDriver);
     }
 
-    // todos los conductores disponibles => lanLng del cliente
-    public GeoQuery getActionsDrivers(LatLng latLng) {
-        GeoQuery geoQuery = mGeofire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), 5); // radio a 5 kilometros
+    // todos los conductores disponibles de firebase => lanLng del cliente => pasamos por parametro el radiu de busqueda
+    public GeoQuery getActionsDrivers(LatLng latLng, double radius) {
+        GeoQuery geoQuery = mGeofire.queryAtLocation(new GeoLocation(latLng.latitude, latLng.longitude), radius); // radio a 5 kilometros
         geoQuery.removeAllListeners();
         return geoQuery;
     }
