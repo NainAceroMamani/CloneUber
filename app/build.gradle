@@ -47,6 +47,11 @@ dependencies {
     // para buscador de google
     implementation 'com.google.android.libraries.places:places:2.2.0'
 
+    // para trazar linea
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
     //limitación por busqueda
     implementation 'com.google.maps.android:android-maps-utils:0.5'
 
