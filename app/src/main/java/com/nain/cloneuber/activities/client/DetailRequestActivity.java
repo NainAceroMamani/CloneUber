@@ -2,9 +2,12 @@ package com.nain.cloneuber.activities.client;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -59,6 +62,8 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
 
     private TextView mTextViewOrigin,mTextViewDestination,mTextViewTime,mTextViewDistance;
 
+    private Button mbtnRequestNow;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,8 +90,23 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
         mTextViewTime = findViewById(R.id.textViewTime);
         mTextViewDistance = findViewById(R.id.textViewDistance);
 
+        mbtnRequestNow = findViewById(R.id.btnRequestNow);
+
         mTextViewOrigin.setText(" " + mExtraOrigin);
         mTextViewDestination.setText(" " +mExtraDestination);
+
+        mbtnRequestNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToRequestDriver();
+            }
+        });
+    }
+
+    private void goToRequestDriver() {
+        Intent intent = new Intent(DetailRequestActivity.this , RequestDriverActivity.class);
+        startActivity(intent);
+        finish(); // para cerrar esta actividad
     }
 
     private void drawRoute() {

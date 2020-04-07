@@ -45,4 +45,6 @@
     <string name="txt_place_destination">Destino: </string>
     <string name="txt_tiempo">Tiempo: </string>
     <string name="txt_distance">Distancia: </string>
+    <string name="txt_buscando_conductor">BUSCANDO CONDUCTOR...</string>
+    <string name="txt_cancel_viaje">CANCELAR VIAJE</string>
 </resources>
