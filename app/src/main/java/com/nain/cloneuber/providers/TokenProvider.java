@@ -17,11 +17,12 @@ public class TokenProvider {
 
     // insertara el token en la base de datos
     public void create(final String idUser){ // id del usuario logeado
+        if (idUser == null) return;
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
                 // nos devolvera un objeto
-                Token token = new Token(instanceIdResult.getToken()); // genramos el token y se lo pasamos al modelo
+                Token token = new Token(instanceIdResult.getToken()); // obtenemos el token y se lo pasamos al modelo
                 mDatabase.child(idUser).setValue(token); // dentro del id del usuario almacenamos el token
             }
         });
