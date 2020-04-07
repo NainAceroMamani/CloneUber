@@ -59,6 +59,7 @@ import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
+import com.nain.cloneuber.providers.TokenProvider;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -110,6 +111,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
     private GoogleMap.OnCameraIdleListener mCameraListener;
 
     private Button mbtnRequestDriver;
+
+    private TokenProvider mTokenProvider;
 
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -190,6 +193,9 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
                 requestDriver();
             }
         });
+
+        mTokenProvider = new TokenProvider();
+        generateToken(); // cuando inicia le asignamos un token
     }
 
     private void requestDriver() {
@@ -521,5 +527,9 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         Intent intent = new Intent(MapClientActivity.this, MainActivity.class);
         startActivity(intent);
         finish(); // para finalizar esta actividad
+    }
+
+    private void generateToken() {
+        mTokenProvider.create(mAtuchProvider.getId()); // id del usuario autentificado
     }
 }

@@ -44,6 +44,7 @@ import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
+import com.nain.cloneuber.providers.TokenProvider;
 
 // interfaz para mapas
 public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -105,6 +106,8 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
 
     };
 
+    private TokenProvider mTokenProvider; // para generar token
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +136,9 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             }
         });
+
+        mTokenProvider = new TokenProvider();
+        generateToken(); // cuando inicia le asignamos un token
     }
 
     // guardar la ubicación del driver
@@ -342,5 +348,9 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         Intent intent = new Intent(MapDriverActivity.this, MainActivity.class);
         startActivity(intent);
         finish(); // para finalizar esta actividad
+    }
+
+    private void generateToken() {
+        mTokenProvider.create(mAtuchProvider.getId()); // id del usuario autentificado
     }
 }
