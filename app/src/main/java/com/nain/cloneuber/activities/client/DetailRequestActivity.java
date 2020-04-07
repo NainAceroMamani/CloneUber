@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
+import com.google.gson.JsonObject;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.GoogleApiProvider;
@@ -42,6 +44,8 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
     private double mExtraOriginLng;
     private double mExtraDestinationLat;
     private double mExtraDestinationLng;
+    private String mExtraOrigin;
+    private String mExtraDestination;
 
     // para inicio y final
     private LatLng mOrigenLatLong;
@@ -52,6 +56,8 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
     // para decodificar
     private List<LatLng> mPolylineList;
     private PolylineOptions mPolygonOptions;
+
+    private TextView mTextViewOrigin,mTextViewDestination,mTextViewTime,mTextViewDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +72,21 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
         mExtraOriginLng = getIntent().getDoubleExtra("origin_lng", 0);
         mExtraDestinationLat = getIntent().getDoubleExtra("destino_lat", 0);
         mExtraDestinationLng = getIntent().getDoubleExtra("destino_lng", 0);
+        mExtraOrigin = getIntent().getStringExtra("origin");
+        mExtraDestination = getIntent().getStringExtra("destination");
 
         mOrigenLatLong = new LatLng(mExtraOriginLat, mExtraOriginLng);
         mDestinationLatLong = new LatLng(mExtraDestinationLat, mExtraDestinationLng);
 
         mGoogleApiProvider = new GoogleApiProvider(DetailRequestActivity.this);
+
+        mTextViewOrigin = findViewById(R.id.textViewOrigen);
+        mTextViewDestination = findViewById(R.id.textViewDestination);
+        mTextViewTime = findViewById(R.id.textViewTime);
+        mTextViewDistance = findViewById(R.id.textViewDistance);
+
+        mTextViewOrigin.setText(" " + mExtraOrigin);
+        mTextViewDestination.setText(" " +mExtraDestination);
     }
 
     private void drawRoute() {
@@ -78,9 +94,10 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 try {
+                    // ver que te trae el json para comprender => googleAppiProvider
                     JSONObject jsonObject = new JSONObject(response.body());
                     JSONArray jsonArray = jsonObject.getJSONArray("routes"); // string de la propiedad del json
-                    JSONObject route = jsonArray.getJSONObject(0); // para obtener todos los datos de la ruta => la primera pocion se puede poner un string para espesificar position
+                    JSONObject route = jsonArray.getJSONObject(0); // para obtener todos los datos de la ruta todo el json de esa position
                     JSONObject polylines = route.getJSONObject("overview_polyline"); // position esfecifica del json
                     String poins = polylines.getString("points"); // asi se llama la propiedad del json
 
@@ -90,11 +107,25 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
                     // dibujamos la ruta
                     mPolygonOptions = new PolylineOptions();
                     mPolygonOptions.color(Color.WHITE);
-                    mPolygonOptions.width(8f);
+                    mPolygonOptions.width(13f);
                     mPolygonOptions.startCap(new SquareCap());
                     mPolygonOptions.jointType(JointType.ROUND);
                     mPolygonOptions.addAll(mPolylineList); // pasar una lista
                     mMap.addPolyline(mPolygonOptions);
+
+                    // datos del json te trae la distancia
+                    JSONArray legs = route.getJSONArray("legs");
+                    JSONObject leg = legs.getJSONObject(0);
+                    // getJSONObject => obtener un ojeto especifico
+                    JSONObject distance = leg.getJSONObject("distance");
+                    JSONObject duration = leg.getJSONObject("duration");
+
+                    // obtenemos las propiedades del json
+                    String distanceText = distance.getString("text");
+                    String durationText = duration.getString("text");
+
+                    mTextViewTime.setText(" " +durationText);
+                    mTextViewDistance.setText(" " +distanceText);
 
                 } catch (Exception e) {
                     Log.d("Error", "Error encontrado " + e.getMessage() );

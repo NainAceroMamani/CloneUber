@@ -43,4 +43,6 @@
     <string name="txt_error_places">Debe seleccionar el lugar de recogida y el destino</string>
     <string name="txt_place_origen">Origen: </string>
     <string name="txt_place_destination">Destino: </string>
+    <string name="txt_tiempo">Tiempo: </string>
+    <string name="txt_distance">Distancia: </string>
 </resources>

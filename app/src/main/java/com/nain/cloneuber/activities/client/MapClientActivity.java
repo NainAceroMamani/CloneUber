@@ -201,6 +201,8 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
             intent.putExtra("origin_lng", mOriginLatLong.longitude);
             intent.putExtra("destino_lat", mDestinationLatLong.latitude);
             intent.putExtra("destino_lng", mDestinationLatLong.longitude);
+            intent.putExtra("origin", mOrigin);
+            intent.putExtra("destination", mDestination);
             startActivity(intent);
         }else {
             Toast.makeText(this, R.string.txt_error_places, Toast.LENGTH_LONG).show();
