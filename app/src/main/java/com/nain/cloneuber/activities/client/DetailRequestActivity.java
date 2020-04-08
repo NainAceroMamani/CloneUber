@@ -108,6 +108,10 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
         // pasamos el coordenada de origen
         intent.putExtra("origin_lat", mOrigenLatLong.latitude);
         intent.putExtra("origin_lng", mOrigenLatLong.longitude);
+        intent.putExtra("origin", mExtraOrigin);
+        intent.putExtra("destination", mExtraDestination);
+        intent.putExtra("destination_lat", mDestinationLatLong.latitude);
+        intent.putExtra("destination_lng", mDestinationLatLong.longitude);
         startActivity(intent);
         finish(); // para cerrar esta actividad
     }

@@ -3,6 +3,7 @@ package com.nain.cloneuber.activities.client;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -12,16 +13,28 @@ import android.widget.Toast;
 import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.SquareCap;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.models.ClientBooking;
 import com.nain.cloneuber.models.FCMBody;
 import com.nain.cloneuber.models.FCMResponse;
+import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.ClientBookingProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
+import com.nain.cloneuber.providers.GoogleApiProvider;
 import com.nain.cloneuber.providers.NotificationProvider;
 import com.nain.cloneuber.providers.TokenProvider;
+import com.nain.cloneuber.utils.DecodePoints;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +56,7 @@ public class RequestDriverActivity extends AppCompatActivity {
     private double mRadius = 0.1;
     private boolean mDriverFound = false; // para saber si ya se encontro un conductor
     private String mIdDriverFound = "";
-    private LatLng mDriverLatLng; // almacenara la latitud y longitud del usuario
+    private LatLng mDriverLatLng; // almacenara la latitud y longitud del driver
 
     private GeoFireProvider mGeoFireProvider;
 
@@ -52,6 +65,18 @@ public class RequestDriverActivity extends AppCompatActivity {
 
     // para obtener el token a travez de un id
     private TokenProvider tokenProvider;
+
+    // para almacenar la info del client en firebase
+    private ClientBookingProvider clientBookingProvider;
+    private AuthProvider authProvider;
+
+    private String mExtraOrigin;
+    private String mExtraDestination;
+
+    private double mExtraDestinationLat;
+    private double mExtraDestinationLng;
+    private LatLng mDestinationLatLng;
+    private GoogleApiProvider mGoogleApiProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +92,21 @@ public class RequestDriverActivity extends AppCompatActivity {
         mExtraOriginLat = getIntent().getDoubleExtra("origin_lat", 0);
         mExtraOriginLng = getIntent().getDoubleExtra("origin_lng", 0);
         mOriginLatLng = new LatLng(mExtraOriginLat, mExtraOriginLng);
+        clientBookingProvider = new ClientBookingProvider();
+        authProvider = new AuthProvider();
+
+        mExtraOrigin = getIntent().getStringExtra("origin");
+        mExtraDestination = getIntent().getStringExtra("destination");
+        mExtraDestinationLat = getIntent().getDoubleExtra("destination_lat", 0);
+        mExtraDestinationLng = getIntent().getDoubleExtra("destination_lng", 0);
+        mDestinationLatLng = new LatLng(mExtraDestinationLat,mExtraDestinationLng);
 
         mGeoFireProvider = new GeoFireProvider();
         tokenProvider = new TokenProvider();
 
         notificationProvider = new NotificationProvider();
 
+        mGoogleApiProvider = new GoogleApiProvider(RequestDriverActivity.this);
         getclosesDriver();
     }
 
@@ -86,7 +120,7 @@ public class RequestDriverActivity extends AppCompatActivity {
                     mIdDriverFound = key; // este metodo te trae el id
                     mDriverLatLng = new LatLng(location.latitude, location.longitude);
                     mTexViewLookingFor.setText(R.string.txt_driver_encontrado);
-                    senNotification(); // enviamos la notificacion
+                    CreateClientBooking(); // alamcenamos la notificacion y enviamos la notificacion
 //                    Log.d("DRIVER", "ID: " + mIdDriverFound);
                     return;
                 }
@@ -127,7 +161,44 @@ public class RequestDriverActivity extends AppCompatActivity {
         });
     }
 
-    private void senNotification() {
+    private void CreateClientBooking(){
+        // posicion de del tiempo y distancia del usuario al conductor
+        mGoogleApiProvider.getDirections(mOriginLatLng, mDriverLatLng).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    // ver que te trae el json para comprender => googleAppiProvider
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    JSONArray jsonArray = jsonObject.getJSONArray("routes"); // string de la propiedad del json
+                    JSONObject route = jsonArray.getJSONObject(0); // para obtener todos los datos de la ruta todo el json de esa position
+                    JSONObject polylines = route.getJSONObject("overview_polyline"); // position esfecifica del json
+                    String poins = polylines.getString("points"); // asi se llama la propiedad del json
+
+                    // datos del json te trae la distancia
+                    JSONArray legs = route.getJSONArray("legs");
+                    JSONObject leg = legs.getJSONObject(0);
+                    // getJSONObject => obtener un ojeto especifico
+                    JSONObject distance = leg.getJSONObject("distance");
+                    JSONObject duration = leg.getJSONObject("duration");
+
+                    // obtenemos las propiedades del json
+                    String distanceText = distance.getString("text");
+                    String durationText = duration.getString("text");
+                    senNotification(durationText, distanceText);
+
+                } catch (Exception e) {
+                    Log.d("Error", "Error encontrado " + e.getMessage() );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void senNotification(final String time, final String km) {
         tokenProvider.getTokens(mIdDriverFound).addListenerForSingleValueEvent(new ValueEventListener() {
             // contiene la informacion del user que esta dentro del nodo
             @Override
@@ -137,8 +208,8 @@ public class RequestDriverActivity extends AppCompatActivity {
 
                     String token  = dataSnapshot.child("token").getValue().toString();
                     Map<String, String> map = new HashMap<>();
-                    map.put("title","SOLICITUD DE SERVICIO");
-                    map.put("body","Un cliente esta solicitando un servicio");
+                    map.put("title","SOLICITUD DE SERVICIO A " + time + " DE TU POSICIÓN ");
+                    map.put("body","Un cliente esta solicitando un servicio a una distacnia de " + km);
                     FCMBody fcmBody= new FCMBody(token, "high",map);
                     notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
                         @Override
@@ -146,7 +217,29 @@ public class RequestDriverActivity extends AppCompatActivity {
                             // respuesta del servidor
                             if(response.body() != null){
                                 if(response.body().getSuccess() == 1) {
-                                    Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
+                                    // almacenamos en la base de datos de fireabse los datos
+                                    ClientBooking clientBooking = new ClientBooking(
+                                            authProvider.getId(),
+                                            mIdDriverFound,
+                                            mExtraDestination,
+                                            mExtraOrigin,
+                                            time,
+                                            km,
+                                            "create",
+                                            mExtraOriginLat,
+                                            mExtraOriginLng,
+                                            mExtraDestinationLat,
+                                            mExtraDestinationLng
+                                    );
+
+                                    clientBookingProvider.create(clientBooking).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(RequestDriverActivity.this, "La petición se creo correctamente", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                    // Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
                                 }else{
                                     Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
                                 }
