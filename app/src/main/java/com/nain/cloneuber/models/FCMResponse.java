@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class FCMResponse {
     // mapeamos la respuesta cuando envaimos una notificacion
     // => https://www.site24x7.com/tools/json-to-java.html
-    private float multicast_id;
-    private float success;
-    private float failure;
-    private float canonical_ids;
+    private int multicast_id;
+    private int success;
+    private int failure;
+    private int canonical_ids;
     ArrayList<Object> results = new ArrayList<Object>();
 
-    public FCMResponse(float multicast_id, float success, float failure, float canonical_ids, ArrayList<Object> results) {
+    public FCMResponse(int multicast_id, int success, int failure, int canonical_ids, ArrayList<Object> results) {
         this.multicast_id = multicast_id;
         this.success = success;
         this.failure = failure;
@@ -19,39 +19,43 @@ public class FCMResponse {
         this.results = results;
     }
 
-    // Getter Methods
-
-    public float getMulticast_id() {
+    public int getMulticast_id() {
         return multicast_id;
     }
 
-    public float getSuccess() {
-        return success;
-    }
-
-    public float getFailure() {
-        return failure;
-    }
-
-    public float getCanonical_ids() {
-        return canonical_ids;
-    }
-
-    // Setter Methods
-
-    public void setMulticast_id( float multicast_id ) {
+    public void setMulticast_id(int multicast_id) {
         this.multicast_id = multicast_id;
     }
 
-    public void setSuccess( float success ) {
+    public int getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(int success) {
         this.success = success;
     }
 
-    public void setFailure( float failure ) {
+    public int getFailure() {
+        return failure;
+    }
+
+    public void setFailure(int failure) {
         this.failure = failure;
     }
 
-    public void setCanonical_ids( float canonical_ids ) {
+    public int getCanonical_ids() {
+        return canonical_ids;
+    }
+
+    public void setCanonical_ids(int canonical_ids) {
         this.canonical_ids = canonical_ids;
+    }
+
+    public ArrayList<Object> getResults() {
+        return results;
+    }
+
+    public void setResults(ArrayList<Object> results) {
+        this.results = results;
     }
 }

@@ -1,5 +1,6 @@
 package com.nain.cloneuber.activities.client;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -12,9 +13,22 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQueryEventListener;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.models.FCMBody;
+import com.nain.cloneuber.models.FCMResponse;
 import com.nain.cloneuber.providers.GeoFireProvider;
+import com.nain.cloneuber.providers.NotificationProvider;
+import com.nain.cloneuber.providers.TokenProvider;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RequestDriverActivity extends AppCompatActivity {
 
@@ -33,6 +47,12 @@ public class RequestDriverActivity extends AppCompatActivity {
 
     private GeoFireProvider mGeoFireProvider;
 
+    // para enviar notificaciones
+    private NotificationProvider notificationProvider;
+
+    // para obtener el token a travez de un id
+    private TokenProvider tokenProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +69,9 @@ public class RequestDriverActivity extends AppCompatActivity {
         mOriginLatLng = new LatLng(mExtraOriginLat, mExtraOriginLng);
 
         mGeoFireProvider = new GeoFireProvider();
+        tokenProvider = new TokenProvider();
+
+        notificationProvider = new NotificationProvider();
 
         getclosesDriver();
     }
@@ -63,7 +86,8 @@ public class RequestDriverActivity extends AppCompatActivity {
                     mIdDriverFound = key; // este metodo te trae el id
                     mDriverLatLng = new LatLng(location.latitude, location.longitude);
                     mTexViewLookingFor.setText(R.string.txt_driver_encontrado);
-                    Log.d("DRIVER", "ID: " + mIdDriverFound);
+                    senNotification(); // enviamos la notificacion
+//                    Log.d("DRIVER", "ID: " + mIdDriverFound);
                     return;
                 }
             }
@@ -98,6 +122,44 @@ public class RequestDriverActivity extends AppCompatActivity {
 
             @Override
             public void onGeoQueryError(DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void senNotification() {
+        tokenProvider.getTokens(mIdDriverFound).addListenerForSingleValueEvent(new ValueEventListener() {
+            // contiene la informacion del user que esta dentro del nodo
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String token  = dataSnapshot.child("token").getValue().toString();
+                Map<String, String> map = new HashMap<>();
+                map.put("title","SOLICITUD DE SERVICIO");
+                map.put("body","Un cliente esta solicitando un servicio");
+                FCMBody fcmBody= new FCMBody(token, "high",map);
+                notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
+                    @Override
+                    public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                        // respuesta del servidor
+                        if(response.body() != null){
+                            if(response.body().getSuccess() == 1) {
+                                Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
+                            }else{
+                                Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<FCMResponse> call, Throwable t) {
+                        // en caso de rror en la peticion
+                        Log.d("Error", "Error: " + t.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });

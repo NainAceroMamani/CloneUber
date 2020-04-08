@@ -27,4 +27,8 @@ public class TokenProvider {
             }
         });
     }
+
+    public DatabaseReference getTokens(String idUser) {
+        return mDatabase.child(idUser);
+    }
 }

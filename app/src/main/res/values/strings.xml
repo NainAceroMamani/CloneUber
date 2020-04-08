@@ -49,4 +49,6 @@
     <string name="txt_cancel_viaje">CANCELAR VIAJE</string>
     <string name="txt_driver_encontrado">CONDUCTOR ENCONTRADO\nESPERANDO RESPUESTA</string>
     <string name="txt_not_driver">No se encontro un Conductor</string>
+    <string name="txt_send_notification">La notificación se ha envaido correctamente!</string>
+    <string name="txt_not_notification">No se pudo enviar la notificación</string>
 </resources>
