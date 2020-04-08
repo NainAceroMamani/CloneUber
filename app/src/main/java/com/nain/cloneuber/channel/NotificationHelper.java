@@ -59,7 +59,8 @@ public class NotificationHelper extends ContextWrapper {
                         .setAutoCancel(true) // para cuando presione sobre la notificacion se cierre
                         .setSound(sounUri) // para el sonido de la notificacion
                         .setContentIntent(intent) //para agregar eventos
-                        .setSmallIcon(R.drawable.ic_car); // icono de la notificacion
+                        .setSmallIcon(R.drawable.ic_car) // icono de la notificacion
+                        .setStyle(new Notification.BigTextStyle().bigText(body).setBigContentTitle(title)); // para mostrar toda la info de la notificaiom y no se recorte
 
     }
 
@@ -71,7 +72,8 @@ public class NotificationHelper extends ContextWrapper {
                 .setAutoCancel(true) // para cuando presione sobre la notificacion se cierre
                 .setSound(sounUri) // para el sonido de la notificacion
                 .setContentIntent(intent)
-                .setSmallIcon(R.drawable.ic_car); // icono de la notificacion
+                .setSmallIcon(R.drawable.ic_car) // icono de la notificacion
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body).setBigContentTitle(title)); // para mostrar toda la info de la notificaiom y no se recorte
 
     }
 
