@@ -132,30 +132,39 @@ public class RequestDriverActivity extends AppCompatActivity {
             // contiene la informacion del user que esta dentro del nodo
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String token  = dataSnapshot.child("token").getValue().toString();
-                Map<String, String> map = new HashMap<>();
-                map.put("title","SOLICITUD DE SERVICIO");
-                map.put("body","Un cliente esta solicitando un servicio");
-                FCMBody fcmBody= new FCMBody(token, "high",map);
-                notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
-                    @Override
-                    public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
-                        // respuesta del servidor
-                        if(response.body() != null){
-                            if(response.body().getSuccess() == 1) {
-                                Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
-                            }else{
+                if(dataSnapshot.exists()) {
+                    // verificamos que si venga porque sino se cierra el App
+
+                    String token  = dataSnapshot.child("token").getValue().toString();
+                    Map<String, String> map = new HashMap<>();
+                    map.put("title","SOLICITUD DE SERVICIO");
+                    map.put("body","Un cliente esta solicitando un servicio");
+                    FCMBody fcmBody= new FCMBody(token, "high",map);
+                    notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
+                        @Override
+                        public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                            // respuesta del servidor
+                            if(response.body() != null){
+                                if(response.body().getSuccess() == 1) {
+                                    Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
+                                }else{
+                                    Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                                }
+                            }else {
+                                // si no trae información
                                 Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
                             }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<FCMResponse> call, Throwable t) {
-                        // en caso de rror en la peticion
-                        Log.d("Error", "Error: " + t.getMessage());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<FCMResponse> call, Throwable t) {
+                            // en caso de rror en la peticion
+                            Log.d("Error", "Error: " + t.getMessage());
+                        }
+                    });
+                }else {
+                    Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
