@@ -207,9 +207,12 @@ public class RequestDriverActivity extends AppCompatActivity {
                     // verificamos que si venga porque sino se cierra el App
 
                     String token  = dataSnapshot.child("token").getValue().toString();
-                    Map<String, String> map = new HashMap<>();
+                    Map<String, String> map = new HashMap<>(); // en un mapa de string puedes mandar varios valores
                     map.put("title","SOLICITUD DE SERVICIO A " + time + " DE TU POSICIÓN ");
-                    map.put("body","Un cliente esta solicitando un servicio a una distacnia de " + km);
+                    map.put("body","Un cliente esta solicitando un servicio a una distacnia de " + km + "\n" +
+                            "Recoger en: " + mExtraOrigin + "\n" +
+                            "Destino: " + mExtraDestination);
+                    map.put("idClient", authProvider.getId());
                     FCMBody fcmBody= new FCMBody(token, "high",map);
                     notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
                         @Override
