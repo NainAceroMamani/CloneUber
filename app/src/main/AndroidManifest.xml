@@ -13,6 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+<!--        declaramos el AcceptReciver para que tenga aaceso a la notification-->
+        <receiver android:name=".receivers.AcceptReciver"
+            android:enabled="true" />
+
 <!--        para las notificaciones de fireabse-->
         <service android:name=".services.MyFirebaseMessagingClient" >
             <intent-filter >

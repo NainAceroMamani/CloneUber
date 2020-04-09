@@ -110,6 +110,7 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
         // Notification con boton
         // acceptIntent donde se ejecutara el metodo cuando le de aceptar
         Intent acceptIntent = new Intent(this, AcceptReciver.class);
+        // dato que le enviamos
         acceptIntent.putExtra("idClient", idClient);
         PendingIntent acceptPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_CODE, acceptIntent , PendingIntent.FLAG_UPDATE_CURRENT);
         // Propiedades del Boton

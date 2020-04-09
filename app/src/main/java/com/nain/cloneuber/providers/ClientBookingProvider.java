@@ -5,6 +5,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.nain.cloneuber.models.ClientBooking;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClientBookingProvider {
 
     private DatabaseReference mDatabase;
@@ -15,5 +18,12 @@ public class ClientBookingProvider {
 
     public Task<Void> create(ClientBooking clientBooking){
         return mDatabase.child(clientBooking.getIdClient()).setValue(clientBooking);
+    }
+
+    // actualizamos el estado de creado a aceptado en firebase database
+    public Task<Void> updateStatus(String idClientBooking, String status) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", status);
+        return mDatabase.child(idClientBooking).updateChildren(map);
     }
 }
