@@ -7,15 +7,25 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.nain.cloneuber.activities.driver.MapDriverBookingActivity;
+import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.ClientBookingProvider;
+import com.nain.cloneuber.providers.GeoFireProvider;
 
 public class AcceptReciver extends BroadcastReceiver {
 
     private ClientBookingProvider mclientBookingProvider;
+    private AuthProvider mAuthProvider;
+    private GeoFireProvider geoFireProvider;
 
     // se ejecutara cuando se presione sobre aceptar
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        // lo eliminamos de fireabse database
+        mAuthProvider = new AuthProvider();
+        geoFireProvider = new GeoFireProvider("active_drivers");
+        geoFireProvider.removeLocation(mAuthProvider.getId());
+
         // intent llega los datos que enviamos idClient del MyFirebaseMassage como putExtra
         // obtenemos el id del cliente
         String idClient = intent.getExtras().getString("idClient");

@@ -105,7 +105,7 @@ public class RequestDriverActivity extends AppCompatActivity {
         mExtraDestinationLng = getIntent().getDoubleExtra("destination_lng", 0);
         mDestinationLatLng = new LatLng(mExtraDestinationLat,mExtraDestinationLng);
 
-        mGeoFireProvider = new GeoFireProvider();
+        mGeoFireProvider = new GeoFireProvider("active_drivers");
         tokenProvider = new TokenProvider();
 
         notificationProvider = new NotificationProvider();

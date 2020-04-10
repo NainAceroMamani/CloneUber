@@ -121,7 +121,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
         mAtuchProvider = new AuthProvider();
-        mGeofireProvider = new GeoFireProvider();
+        mGeofireProvider = new GeoFireProvider("active_drivers");
 
         // boton para conectar o desconectar gps
         mbtnConnect = findViewById(R.id.btnConnect);

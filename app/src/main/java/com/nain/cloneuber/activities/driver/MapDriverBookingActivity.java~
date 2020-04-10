@@ -103,6 +103,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_driver_booking);
 
+        MyToolbar.show(this, "Conductor", false); // Toolbar pra el app instanciada de clase
+
         // instanciamos el mFusedLocation
         mFusedLocation = LocationServices.getFusedLocationProviderClient(this); // para poder iniciar o detener la ubicación
 

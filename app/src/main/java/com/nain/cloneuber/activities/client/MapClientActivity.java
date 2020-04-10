@@ -173,7 +173,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
         mAtuchProvider = new AuthProvider();
-        mGeofireProvider = new GeoFireProvider();
+        mGeofireProvider = new GeoFireProvider("active_drivers");
 
         // buscador
         if(!Places.isInitialized()){

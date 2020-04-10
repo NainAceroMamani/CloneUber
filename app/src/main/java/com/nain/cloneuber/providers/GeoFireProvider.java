@@ -12,8 +12,8 @@ public class GeoFireProvider {
     private DatabaseReference mDatabase;
     private GeoFire mGeofire;
 
-    public GeoFireProvider() {
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("active_drivers");
+    public GeoFireProvider(String references) {
+        mDatabase = FirebaseDatabase.getInstance().getReference().child(references);
         mGeofire = new GeoFire(mDatabase);
     }
 
