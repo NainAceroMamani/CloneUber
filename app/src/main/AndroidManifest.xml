@@ -12,19 +12,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-<!--        declaramos el AcceptReciver para que tenga aaceso a la notification-->
-        <receiver android:name=".receivers.AcceptReciver"
+        <activity android:name=".activities.client.MapClientBookingActivity"></activity>
+        <!-- declaramos el AcceptReciver para que tenga aaceso a la notification btn=> accept, cancel -->
+        <receiver
+            android:name=".receivers.AcceptReciver"
+            android:enabled="true" />
+        <receiver
+            android:name=".receivers.CancelReciver"
             android:enabled="true" />
 
-<!--        para las notificaciones de fireabse-->
-        <service android:name=".services.MyFirebaseMessagingClient" >
-            <intent-filter >
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+        <service android:name=".services.MyFirebaseMessagingClient">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name=".activities.client.RequestDriverActivity"/>
+        <activity android:name=".activities.client.RequestDriverActivity" />
         <activity
             android:name=".activities.client.DetailRequestActivity"
             android:parentActivityName=".activities.client.MapClientActivity" />

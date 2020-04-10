@@ -26,4 +26,9 @@ public class ClientBookingProvider {
         map.put("status", status);
         return mDatabase.child(idClientBooking).updateChildren(map);
     }
+
+    // asemos referencia a la fireabase database => idClientBooking == idClient
+    public DatabaseReference getstatus(String idClientBooking){
+        return mDatabase.child(idClientBooking).child("status");
+    }
 }

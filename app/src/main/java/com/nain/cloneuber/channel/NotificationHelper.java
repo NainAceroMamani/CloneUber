@@ -65,13 +65,14 @@ public class NotificationHelper extends ContextWrapper {
 
     // metodo para mostrar notificaciones con boton
     @RequiresApi(api = Build.VERSION_CODES.O) // NECESARIO PARA LAS VERSIONES DESDE ANDROID OREO
-    public Notification.Builder getNotificationAction(String title, String body, Uri sounUri, Notification.Action accepAction) {
+    public Notification.Builder getNotificationAction(String title, String body, Uri sounUri, Notification.Action accepAction, Notification.Action cancelAction) {
         return new Notification.Builder(getApplicationContext(),CHANNEL_ID)// PRIMER PARAMETRO ES EL CONTEXTO
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true) // para cuando presione sobre la notificacion se cierre
                 .setSound(sounUri) // para el sonido de la notificacion
                 .addAction(accepAction) // para añadir la accion
+                .addAction(cancelAction) // para canelar la notification => max 3 actions
                 .setSmallIcon(R.drawable.ic_car) // icono de la notificacion
                 .setStyle(new Notification.BigTextStyle().bigText(body).setBigContentTitle(title)); // para mostrar toda la info de la notificaiom y no se recorte
     }
@@ -89,13 +90,14 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     // metodo para mostrar notificaciones con boton
-    public NotificationCompat.Builder getNotificationolApiAction(String title, String body, Uri sounUri, NotificationCompat.Action accepAction) {
+    public NotificationCompat.Builder getNotificationolApiAction(String title, String body, Uri sounUri, NotificationCompat.Action accepAction, NotificationCompat.Action cancelAction) {
         return new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID)// PRIMER PARAMETRO ES EL CONTEXTO
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true) // para cuando presione sobre la notificacion se cierre
                 .setSound(sounUri) // para el sonido de la notificacion
                 .addAction(accepAction) // para añadir la accion
+                .addAction(cancelAction) // para cancelar notification => max 3 acciones
                 .setSmallIcon(R.drawable.ic_car) // icono de la notificacion
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body).setBigContentTitle(title)); // para mostrar toda la info de la notificaiom y no se recorte
     }

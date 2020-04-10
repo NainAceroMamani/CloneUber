@@ -16,6 +16,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.channel.NotificationHelper;
 import com.nain.cloneuber.receivers.AcceptReciver;
+import com.nain.cloneuber.receivers.CancelReciver;
 
 import java.util.Map;
 
@@ -74,6 +75,8 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
     }
 
     private void showNotificationApiAction(String title, String body, String idClient) {
+        // aceptar
+
         // Notification con boton
         // acceptIntent donde se ejecutara el metodo cuando le de aceptar
         Intent acceptIntent = new Intent(this, AcceptReciver.class);
@@ -86,10 +89,21 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                 acceptPendingIntent
         ).build();
 
+        // cancel
+        Intent cencelIntent = new Intent(this, CancelReciver.class);
+        cencelIntent.putExtra("idClient", idClient);
+        PendingIntent cencelPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_CODE, cencelIntent , PendingIntent.FLAG_UPDATE_CURRENT);
+        // Propiedades del Boton
+        NotificationCompat.Action cancelAction = new NotificationCompat.Action.Builder(
+                R.mipmap.ic_launcher,
+                "Cancelar", // nombre del boton
+                cencelPendingIntent
+        ).build();
+
         Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION); // sonido de la notificacion
 
         NotificationHelper notificationHelper = new NotificationHelper(getBaseContext());
-        NotificationCompat.Builder builder = notificationHelper.getNotificationolApiAction(title,body, sound, acceptAction);
+        NotificationCompat.Builder builder = notificationHelper.getNotificationolApiAction(title,body, sound, acceptAction, cancelAction);
         notificationHelper.getManager().notify(2,builder.build()); // primer paramtro id de la notificacion sera dos para que no sobreescriba la notification 1
     }
 
@@ -108,6 +122,8 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void showNotificationApiOreoActions(String title, String body, String idClient) {
         // Notification con boton
+        // aceptar
+
         // acceptIntent donde se ejecutara el metodo cuando le de aceptar
         Intent acceptIntent = new Intent(this, AcceptReciver.class);
         // dato que le enviamos
@@ -120,13 +136,25 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                 acceptPendingIntent
         ).build();
 
+        // cancel
+        Intent cancelIntent = new Intent(this, CancelReciver.class);
+        // dato que le enviamos
+        cancelIntent.putExtra("idClient", idClient);
+        PendingIntent cancelPendingIntent = PendingIntent.getBroadcast(this, NOTIFICATION_CODE, cancelIntent , PendingIntent.FLAG_UPDATE_CURRENT);
+        // Propiedades del Boton
+        Notification.Action cancelAction = new Notification.Action.Builder(
+                R.mipmap.ic_launcher,
+                "Cancelar", // nombre del boton
+                cancelPendingIntent
+        ).build();
+
         //intent => accion dque va a ejecutar
 //        PendingIntent intent = PendingIntent.getActivity(getBaseContext(),0,new Intent(), PendingIntent.FLAG_ONE_SHOT);
         Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION); // sonido de la notificacion
 
         NotificationHelper notificationHelper = new NotificationHelper(getBaseContext());
         // Ya no utlizamos el NotificationCompat => SOLO NOTIFICATION
-        Notification.Builder builder = notificationHelper.getNotificationAction(title,body, sound, acceptAction);
+        Notification.Builder builder = notificationHelper.getNotificationAction(title,body, sound, acceptAction, cancelAction);
         notificationHelper.getManager().notify(2,builder.build()); // primer paramtro id de la notificacion
     }
 }

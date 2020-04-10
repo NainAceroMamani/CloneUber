@@ -3,6 +3,7 @@ package com.nain.cloneuber.activities.client;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -77,6 +78,9 @@ public class RequestDriverActivity extends AppCompatActivity {
     private double mExtraDestinationLng;
     private LatLng mDestinationLatLng;
     private GoogleApiProvider mGoogleApiProvider;
+
+    // para el escuchador
+    private ValueEventListener mlistener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,7 +242,8 @@ public class RequestDriverActivity extends AppCompatActivity {
                                     clientBookingProvider.create(clientBooking).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            Toast.makeText(RequestDriverActivity.this, "La petición se creo correctamente", Toast.LENGTH_LONG).show();
+                                         // este sera un escuchador que cuando se realize algun cambio en la database ejecutara un accion
+                                         checkStatusClientBooking();
                                         }
                                     });
 
@@ -268,5 +273,44 @@ public class RequestDriverActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void checkStatusClientBooking(){
+        // funciona para obtener la ubicacion en tiempo real => esto se ejecutara infinitamente com el mListener lo contralamos
+        mlistener = clientBookingProvider.getstatus(authProvider.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // verificamos si existe los datos en fireabse database
+                if(dataSnapshot.exists()) {
+                    String status = dataSnapshot.getValue().toString(); // defrente getValue por que en el provider ya apuntamos al status
+                    if (status.equals("accept")) {
+                        Intent intent = new Intent(RequestDriverActivity.this, MapClientBookingActivity.class);
+                        startActivity(intent);
+                        finish(); // para que esta actividad finalize => para que no podamos volver hacia atras
+                    }
+                    else if(status.equals("cancel")){
+                        Toast.makeText(RequestDriverActivity.this, R.string.txt_not_Accept_travel_driver, Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(RequestDriverActivity.this, MapClientActivity.class);
+                        startActivity(intent);
+                        finish(); // para que esta actividad finalize => para que no podamos volver hacia atras
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    // se ejecuta cuando finalizamos una actividad
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // para que pare el escuchador => para que no se quede escuchando los cambios
+        if(mlistener != null){
+            clientBookingProvider.getstatus(authProvider.getId()).removeEventListener(mlistener);
+        }
     }
 }
