@@ -52,4 +52,5 @@
     <string name="txt_send_notification">La notificación se ha envaido correctamente!</string>
     <string name="txt_not_notification">No se pudo enviar la notificación</string>
     <string name="txt_not_Accept_travel_driver">El conductor no aceptó el viaje</string>
+    <string name="txt_mapa_travel">MAPA DEL VIAJE DEL CONDUCTOR</string>
 </resources>

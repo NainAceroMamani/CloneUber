@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.nain.cloneuber.activities.driver.MapDriverBookingActivity;
 import com.nain.cloneuber.providers.ClientBookingProvider;
 
 public class AcceptReciver extends BroadcastReceiver {
@@ -25,5 +26,11 @@ public class AcceptReciver extends BroadcastReceiver {
         // para que desaparesca automaticamente
         NotificationManager manager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         manager.cancel(2); // el id de la notifiacation con boton es el 2
+
+        // abrimos actividad desde notificación
+        Intent intent1 = new Intent(context, MapDriverBookingActivity.class);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.setAction(Intent.ACTION_RUN);
+        context.startActivity(intent1);
     }
 }
