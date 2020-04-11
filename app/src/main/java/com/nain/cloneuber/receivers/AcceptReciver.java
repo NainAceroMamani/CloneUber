@@ -40,6 +40,7 @@ public class AcceptReciver extends BroadcastReceiver {
         Intent intent1 = new Intent(context, MapDriverBookingActivity.class);
         intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // FLAG_ACTIVITY_CLEAR_TASK => par que el conductor no pueda volver a la pantalla anterior
         intent1.setAction(Intent.ACTION_RUN);
+        intent1.putExtra("idClient", idClient); // pasamos como un parametro extra el id del cliente a la actividad MapDriverBookingActivity
         context.startActivity(intent1);
     }
 }

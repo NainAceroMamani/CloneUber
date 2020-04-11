@@ -53,4 +53,6 @@
     <string name="txt_not_notification">No se pudo enviar la notificación</string>
     <string name="txt_not_Accept_travel_driver">El conductor no aceptó el viaje</string>
     <string name="txt_mapa_travel">MAPA DEL VIAJE DEL CONDUCTOR</string>
+    <string name="txt_name_user">Nombre del usuario</string>
+    <string name="txt_email_user">Email del usuario</string>
 </resources>

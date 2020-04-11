@@ -3,6 +3,7 @@ package com.nain.cloneuber.activities.client;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -53,7 +54,6 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
     // para guardar el destino
     private String mDestination;         // nombre del lugar
     private LatLng mDestinationLatLong;  // latitud y longitud del lugar
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

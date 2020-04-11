@@ -25,4 +25,9 @@ public class ClientProvider {
 
         return mDatabase.child(client.getId()).setValue(map);
     }
+
+    // para obtener los datos del cliente
+    public DatabaseReference getClient(String idClient) {
+        return mDatabase.child(idClient);
+    }
 }

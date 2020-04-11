@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -36,9 +37,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.ClientProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
 import com.nain.cloneuber.providers.TokenProvider;
 
@@ -98,6 +103,12 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
     };
 
+    private TextView mtextViewClientBooking;
+    private TextView mtextViewEmailClientBooking;
+
+    private String mExtraClientId; // para obtener el extra que se esta pasando del AcceptReciver
+    private ClientProvider mClientProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,8 +120,35 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
 
+        mtextViewClientBooking = findViewById(R.id.textViewClientBooking);
+        mtextViewEmailClientBooking = findViewById(R.id.textViewEmailClientBooking);
+
         mAtuchProvider = new AuthProvider();
         mGeofireProvider = new GeoFireProvider("drivers_working");
+
+        mExtraClientId = getIntent().getStringExtra("idClient");
+        mClientProvider = new ClientProvider();
+        getClientBooking();
+    }
+
+    private void getClientBooking() {
+        // este metodo addListenerForSingleValueEvent porque solo obtendre la info del usuario una un ica vez y  no en tiempo real
+        mClientProvider.getClient(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    String email = dataSnapshot.child("email").getValue().toString();
+                    String name = dataSnapshot.child("name").getValue().toString();
+                    mtextViewClientBooking.setText(name);
+                    mtextViewEmailClientBooking.setText(email);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // guardar la ubicación del driver
