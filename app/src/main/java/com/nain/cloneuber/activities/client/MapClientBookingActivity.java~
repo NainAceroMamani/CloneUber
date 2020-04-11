@@ -110,7 +110,7 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         }
         mtextViewClientBooking = findViewById(R.id.textViewDriverBooking);
         mtextViewEmailClientBooking = findViewById(R.id.textViewEmailDriverBooking);
-        mtextViewOriginClientBooking = findViewById(R.id.textViewOriginClientBooking);
+        mtextViewOriginClientBooking = findViewById(R.id.textViewDriverBooking);
         mtextViewDestinationBooking = findViewById(R.id.textViewDestinationDriverBooking);
 
         mdriverProvider = new DriverProvider();
