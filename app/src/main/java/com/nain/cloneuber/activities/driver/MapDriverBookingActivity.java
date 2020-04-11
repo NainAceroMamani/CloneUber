@@ -12,12 +12,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,19 +35,35 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.JointType;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.SquareCap;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.client.DetailRequestActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.ClientBookingProvider;
 import com.nain.cloneuber.providers.ClientProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
+import com.nain.cloneuber.providers.GoogleApiProvider;
 import com.nain.cloneuber.providers.TokenProvider;
+import com.nain.cloneuber.utils.DecodePoints;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapDriverBookingActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -67,6 +85,19 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
     private LatLng mCurrentLatlng;
     private GeoFireProvider mGeofireProvider;
 
+    // para inicio y final
+    private LatLng mOrigenLatLong;
+    private LatLng mDestinationLatLong;
+
+    private GoogleApiProvider mGoogleApiProvider;
+
+    // para decodificar
+    private List<LatLng> mPolylineList;
+    private PolylineOptions mPolygonOptions;
+
+    private boolean mIsFirstTime = true; // para que solo entre una vez
+
+    private ClientBookingProvider mclientBookingProvider;
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
         // sebreescribimos un método
@@ -97,14 +128,18 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
                                     .build()
                     ));
                     updateLocation();
+
+                    if(mIsFirstTime) {
+                        mIsFirstTime = false;
+                        getClientBooking();
+                    }
                 }
             }
         }
 
     };
 
-    private TextView mtextViewClientBooking;
-    private TextView mtextViewEmailClientBooking;
+    private TextView mtextViewClientBooking, mtextViewEmailClientBooking, mtextViewOriginClientBooking, mtextViewDestinationBooking;
 
     private String mExtraClientId; // para obtener el extra que se esta pasando del AcceptReciver
     private ClientProvider mClientProvider;
@@ -122,16 +157,99 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
         mtextViewClientBooking = findViewById(R.id.textViewClientBooking);
         mtextViewEmailClientBooking = findViewById(R.id.textViewEmailClientBooking);
+        mtextViewOriginClientBooking = findViewById(R.id.textViewOriginClientBooking);
+        mtextViewDestinationBooking = findViewById(R.id.textViewDestinationClientBooking);
+
+        mGoogleApiProvider = new GoogleApiProvider(MapDriverBookingActivity.this);
+
+        mclientBookingProvider = new ClientBookingProvider();
 
         mAtuchProvider = new AuthProvider();
         mGeofireProvider = new GeoFireProvider("drivers_working");
 
         mExtraClientId = getIntent().getStringExtra("idClient");
         mClientProvider = new ClientProvider();
-        getClientBooking();
+        getClient();
     }
 
-    private void getClientBooking() {
+    private void getClientBooking(){
+        mclientBookingProvider.getClientBooking(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    String destino = dataSnapshot.child("destination").getValue().toString();
+                    String origen = dataSnapshot.child("origin").getValue().toString();
+                    double destiantionLat = Double.parseDouble(dataSnapshot.child("destinationLat").getValue().toString());
+                    double destiantionLng = Double.parseDouble(dataSnapshot.child("destinationLng").getValue().toString());
+
+                    double originLat = Double.parseDouble(dataSnapshot.child("originLat").getValue().toString());
+                    double originLng = Double.parseDouble(dataSnapshot.child("originLng").getValue().toString());
+
+                    mOrigenLatLong = new LatLng(originLat, originLng);
+                    mDestinationLatLong = new LatLng(destiantionLat, destiantionLng);
+
+                    mtextViewOriginClientBooking.setText("Recoger en: " + origen);
+                    mtextViewDestinationBooking.setText("Destino: " + destino);
+                    mMap.addMarker(new MarkerOptions().position(mOrigenLatLong).title("Recoger Aquí").icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_red)));
+                    drawRoute();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void drawRoute() {
+        mGoogleApiProvider.getDirections(mCurrentLatlng, mOrigenLatLong).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    // ver que te trae el json para comprender => googleAppiProvider
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    JSONArray jsonArray = jsonObject.getJSONArray("routes"); // string de la propiedad del json
+                    JSONObject route = jsonArray.getJSONObject(0); // para obtener todos los datos de la ruta todo el json de esa position
+                    JSONObject polylines = route.getJSONObject("overview_polyline"); // position esfecifica del json
+                    String poins = polylines.getString("points"); // asi se llama la propiedad del json
+
+                    // ahora esto esta codifico lo decodificamos (esta encryptado)
+                    mPolylineList = DecodePoints.decodePoly(poins);
+
+                    // dibujamos la ruta
+                    mPolygonOptions = new PolylineOptions();
+                    mPolygonOptions.color(Color.WHITE);
+                    mPolygonOptions.width(13f);
+                    mPolygonOptions.startCap(new SquareCap());
+                    mPolygonOptions.jointType(JointType.ROUND);
+                    mPolygonOptions.addAll(mPolylineList); // pasar una lista
+                    mMap.addPolyline(mPolygonOptions);
+
+                    // datos del json te trae la distancia
+                    JSONArray legs = route.getJSONArray("legs");
+                    JSONObject leg = legs.getJSONObject(0);
+                    // getJSONObject => obtener un ojeto especifico
+                    JSONObject distance = leg.getJSONObject("distance");
+                    JSONObject duration = leg.getJSONObject("duration");
+
+                    // obtenemos las propiedades del json
+                    String distanceText = distance.getString("text");
+                    String durationText = duration.getString("text");
+
+                } catch (Exception e) {
+                    Log.d("Error", "Error encontrado " + e.getMessage() );
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void getClient() {
         // este metodo addListenerForSingleValueEvent porque solo obtendre la info del usuario una un ica vez y  no en tiempo real
         mClientProvider.getClient(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

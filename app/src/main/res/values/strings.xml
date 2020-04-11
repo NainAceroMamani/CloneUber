@@ -55,4 +55,6 @@
     <string name="txt_mapa_travel">MAPA DEL VIAJE DEL CONDUCTOR</string>
     <string name="txt_name_user">Nombre del usuario</string>
     <string name="txt_email_user">Email del usuario</string>
+    <string name="txt_lugar_recogida">Lugar de recogida</string>
+    <string name="txt_lugar_Destino">Destino</string>
 </resources>

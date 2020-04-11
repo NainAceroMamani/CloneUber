@@ -21,12 +21,14 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginBottom="2dp">
 
                 <ImageView
                     android:id="@+id/imageViewClientBooking"
@@ -41,11 +43,30 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/textViewOriginClientBooking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_lugar_recogida"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/textViewDestinationClientBooking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_lugar_Destino"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:textSize="16sp"/>
+
+                    <TextView
                         android:id="@+id/textViewClientBooking"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/txt_name_user"
-                        android:layout_margin="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:textSize="16sp"/>
 
                     <TextView
@@ -53,7 +74,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/txt_email_user"
-                        android:layout_margin="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
                         android:textSize="16sp"/>
 
                 </LinearLayout>

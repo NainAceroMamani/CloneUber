@@ -31,4 +31,9 @@ public class ClientBookingProvider {
     public DatabaseReference getstatus(String idClientBooking){
         return mDatabase.child(idClientBooking).child("status");
     }
+
+    // para trazar la ruta del conductor al cliente
+    public DatabaseReference getClientBooking(String idClientBooking){
+        return mDatabase.child(idClientBooking);
+    }
 }
