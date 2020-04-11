@@ -57,4 +57,6 @@
     <string name="txt_email_user">Email del usuario</string>
     <string name="txt_lugar_recogida">Lugar de recogida</string>
     <string name="txt_lugar_Destino">Destino</string>
+    <string name="txt_name_driver">Nombre de conductor</string>
+    <string name="txt_email_driver">Email del conductor</string>
 </resources>

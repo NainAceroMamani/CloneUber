@@ -16,12 +16,16 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.client.MapClientActivity;
 import com.nain.cloneuber.activities.client.RegisterActivity;
 import com.nain.cloneuber.activities.driver.MapDriverActivity;
 import com.nain.cloneuber.activities.driver.RegisterDriverActivity;
 import com.nain.cloneuber.providers.AuthProvider;
+import com.nain.cloneuber.providers.DriverProvider;
 
 import dmax.dialog.SpotsDialog;
 
@@ -36,6 +40,8 @@ public class LoginActivity extends AppCompatActivity {
 
     SharedPreferences mPref;
     AlertDialog mDialog;
+
+    DriverProvider mdriverProvider;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +80,8 @@ public class LoginActivity extends AppCompatActivity {
         mDialog = new SpotsDialog.Builder().setContext(LoginActivity.this).setMessage(R.string.txt_message_login).build();
 
         mPref = getApplicationContext().getSharedPreferences("typeUser", MODE_PRIVATE);
+
+        mdriverProvider = new DriverProvider();
     }
 
     private void gotoRegister() {
@@ -102,10 +110,35 @@ public class LoginActivity extends AppCompatActivity {
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                             } else if(user.equals("driver")) {
-                                Intent intent = new Intent(LoginActivity.this, MapDriverActivity.class);
-                                // nos aseguramos que counado precione el boton de atras no me lleve al registro sino se quede en el mapa
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                String idDriver = mAuthProvider.getId();
+                                mdriverProvider.getDriver(idDriver).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if(dataSnapshot.exists()) {
+                                            String marca = dataSnapshot.child("getVehicleBrand").getValue().toString();
+                                            String placa = dataSnapshot.child("getVehiclePlate").getValue().toString();
+
+                                            if(marca != null && placa != null) {
+                                                Intent intent = new Intent(LoginActivity.this, MapDriverActivity.class);
+                                                // nos aseguramos que counado precione el boton de atras no me lleve al registro sino se quede en el mapa
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                startActivity(intent);
+                                            }
+                                        }else {
+                                            final SharedPreferences.Editor editor = mPref.edit();
+                                            editor.putString("user", "client");
+                                            editor.apply();
+                                            Intent intent = new Intent(LoginActivity.this, MapClientActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, R.string.error_credentials, Toast.LENGTH_LONG).show();

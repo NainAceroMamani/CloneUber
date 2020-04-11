@@ -26,4 +26,9 @@ public class DriverProvider {
 
         return mDatabase.child(driver.getId()).setValue(map);
     }
+
+    // para obtener los datos del Driver
+    public DatabaseReference getDriver(String idDriver) {
+        return mDatabase.child(idDriver);
+    }
 }
