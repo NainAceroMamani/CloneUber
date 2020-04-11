@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,6 +40,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
 import com.nain.cloneuber.includes.MyToolbar;
@@ -69,6 +73,7 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
     // para almacenar la positon del conductor
     private LatLng mCurrentLatlng;
     private GeoFireProvider mGeofireProvider;
+
 
     //escuchara cada vez que el usuario se mueva
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -107,6 +112,8 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
     };
 
     private TokenProvider mTokenProvider; // para generar token
+    // para el escuchador
+    private ValueEventListener mlistener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +146,34 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
 
         mTokenProvider = new TokenProvider();
         generateToken(); // cuando inicia le asignamos un token
+        isDriverWorking();
+    }
+
+    // cuando se salga de la aplication eliminamos el evento LocationCallback
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mlistener != null && mAtuchProvider.exitSesion()) {
+            disconnect();
+            mGeofireProvider.isDriverWorking(mAtuchProvider.getId()).removeEventListener(mlistener);
+        }
+    }
+
+    // cuando se cambia de actividad en la otra actividad , para que deje de enviar datos a fireabse
+    private void isDriverWorking(){
+        mlistener = mGeofireProvider.isDriverWorking(mAtuchProvider.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    disconnect();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     // guardar la ubicación del driver

@@ -20,7 +20,6 @@ public class AcceptReciver extends BroadcastReceiver {
     // se ejecutara cuando se presione sobre aceptar
     @Override
     public void onReceive(Context context, Intent intent) {
-
         // lo eliminamos de fireabse database
         mAuthProvider = new AuthProvider();
         geoFireProvider = new GeoFireProvider("active_drivers");
@@ -39,7 +38,7 @@ public class AcceptReciver extends BroadcastReceiver {
 
         // abrimos actividad desde notificación
         Intent intent1 = new Intent(context, MapDriverBookingActivity.class);
-        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // FLAG_ACTIVITY_CLEAR_TASK => par que el conductor no pueda volver a la pantalla anterior
         intent1.setAction(Intent.ACTION_RUN);
         context.startActivity(intent1);
     }

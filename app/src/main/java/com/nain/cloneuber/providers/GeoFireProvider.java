@@ -34,4 +34,8 @@ public class GeoFireProvider {
         return geoQuery;
     }
 
+    // observar si un conductor se conecto a conductores trabajando
+    public DatabaseReference isDriverWorking(String idDriver) {
+        return FirebaseDatabase.getInstance().getReference().child("drivers_working").child(idDriver);
+    }
 }
