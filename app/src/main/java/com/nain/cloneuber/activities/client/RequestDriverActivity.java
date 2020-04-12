@@ -217,7 +217,7 @@ public class RequestDriverActivity extends AppCompatActivity {
                             "Recoger en: " + mExtraOrigin + "\n" +
                             "Destino: " + mExtraDestination);
                     map.put("idClient", authProvider.getId());
-                    FCMBody fcmBody= new FCMBody(token, "high",map);
+                    FCMBody fcmBody= new FCMBody(token, "high","4500s",map);
                     notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
                         @Override
                         public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {

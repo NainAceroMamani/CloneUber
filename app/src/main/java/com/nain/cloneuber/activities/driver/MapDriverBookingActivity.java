@@ -43,24 +43,32 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.client.DetailRequestActivity;
+import com.nain.cloneuber.activities.client.RequestDriverActivity;
 import com.nain.cloneuber.includes.MyToolbar;
+import com.nain.cloneuber.models.ClientBooking;
+import com.nain.cloneuber.models.FCMBody;
+import com.nain.cloneuber.models.FCMResponse;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.ClientBookingProvider;
 import com.nain.cloneuber.providers.ClientProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
 import com.nain.cloneuber.providers.GoogleApiProvider;
+import com.nain.cloneuber.providers.NotificationProvider;
 import com.nain.cloneuber.providers.TokenProvider;
 import com.nain.cloneuber.utils.DecodePoints;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -97,6 +105,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
     private PolylineOptions mPolygonOptions;
 
     private boolean mIsFirstTime = true; // para que solo entre una vez
+    // para enviar notificaciones
+    private NotificationProvider notificationProvider;
 
     private ClientBookingProvider mclientBookingProvider;
     //escuchara cada vez que el usuario se mueva
@@ -150,6 +160,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
     private boolean mIsCloseToClient = false;
 
+    private TokenProvider tokenProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,6 +184,9 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mGoogleApiProvider = new GoogleApiProvider(MapDriverBookingActivity.this);
 
         mclientBookingProvider = new ClientBookingProvider();
+
+        tokenProvider = new TokenProvider();
+        notificationProvider = new NotificationProvider();
 
         mAtuchProvider = new AuthProvider();
         mGeofireProvider = new GeoFireProvider("drivers_working");
@@ -201,6 +216,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
     private void finishBooking() {
         mclientBookingProvider.updateStatus(mExtraClientId, "finish");
+        senNotification(getString(R.string.txt_travel_client_finish));
+        disconnect(); // dejamos de escuhcar el gps y eliminamos de fireabse database las posiciones
         Intent intent = new Intent(MapDriverBookingActivity.this, CalificationClientActivity.class);
         startActivity(intent);
         finish(); // para que no podamos volver hacia atras
@@ -208,6 +225,7 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
     private void startBooking() {
         mclientBookingProvider.updateStatus(mExtraClientId, "start");
+        senNotification(getString(R.string.txt_travel_client_iniciado));
         mButtonStartBooking.setVisibility(View.GONE);
         mButtonFinishBooking.setVisibility(View.VISIBLE);
         mMap.clear(); // eliminá el marcador y la ruta trazada
@@ -513,5 +531,51 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
                 }, LOCATION_REQUEST_CODE );
             }
         }
+    }
+
+    private void senNotification(final String status) {
+        tokenProvider.getTokens(mExtraClientId).addListenerForSingleValueEvent(new ValueEventListener() {
+            // contiene la informacion del user que esta dentro del nodo
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    // verificamos que si venga porque sino se cierra el App
+
+                    String token  = dataSnapshot.child("token").getValue().toString();
+                    Map<String, String> map = new HashMap<>(); // en un mapa de string puedes mandar varios valores
+                    map.put("title","ESTADO DE TU VIAJE ");
+                    map.put("body", "Tú estado de viaje es: " + status);
+                    FCMBody fcmBody= new FCMBody(token, "high","4500s",map);
+                    notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
+                        @Override
+                        public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                            // respuesta del servidor
+                            if(response.body() != null){
+                                // != 1 no se envio
+                                if(response.body().getSuccess() != 1) {
+                                    Toast.makeText(MapDriverBookingActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                                }
+                            }else {
+                                // si no trae información
+                                Toast.makeText(MapDriverBookingActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<FCMResponse> call, Throwable t) {
+                            // en caso de rror en la peticion
+                            Log.d("Error", "Error: " + t.getMessage());
+                        }
+                    });
+                }else {
+                    Toast.makeText(MapDriverBookingActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

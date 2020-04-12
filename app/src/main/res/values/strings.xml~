@@ -68,6 +68,4 @@
     <string name="txt_travel_aceptado">Estado: Aceptado</string>
     <string name="txt_travel_iniciado">Estado: Viaje iniciado</string>
     <string name="txt_travel_finalizado">Estado: Viaje finalizado</string>
-    <string name="txt_travel_client_finish">Viaje finalizado</string>
-    <string name="txt_travel_client_iniciado">Viaje iniciado</string>
 </resources>
