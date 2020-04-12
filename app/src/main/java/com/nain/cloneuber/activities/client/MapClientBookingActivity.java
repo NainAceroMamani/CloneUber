@@ -3,6 +3,7 @@ package com.nain.cloneuber.activities.client;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,7 +75,8 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
 
     private LatLng mDriverLatLong;  // latitud y longitud del lugar
 
-    private TextView mtextViewClientBooking, mtextViewEmailClientBooking, mtextViewOriginClientBooking, mtextViewDestinationBooking;
+    private TextView mtextViewClientBooking, mtextViewEmailClientBooking, mtextViewOriginClientBooking, mtextViewDestinationBooking
+                    ,mtextViewStatusBooking;
 
     private ClientBookingProvider mclientBookingProvider;
 
@@ -90,6 +92,7 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
 
     private ValueEventListener mlistener;
     private String mIdDriver; // para contralar los eventos necesitamos el id del driver
+    private ValueEventListener mListenerStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +115,54 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         mtextViewEmailClientBooking = findViewById(R.id.textViewEmailDriverBooking);
         mtextViewOriginClientBooking = findViewById(R.id.textViewOriginClientBooking);
         mtextViewDestinationBooking = findViewById(R.id.textViewDestinationDriverBooking);
-
-        mdriverProvider = new DriverProvider();
+        mtextViewStatusBooking = findViewById(R.id.textViewStatusBooking);
 
         mclientBookingProvider = new ClientBookingProvider();
+        mdriverProvider = new DriverProvider();
+
+        //metodo que escuchara cada vez que cambie el valor del status
+        getStaus();
+
         getClientBooking();
+    }
+
+    private void getStaus() {
+        // addValueEventListener escuchar los cambios en tiempo real
+        mListenerStatus = mclientBookingProvider.getstatus(mAtuchProvider.getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    String status = dataSnapshot.getValue().toString();
+                    if(status.equals("accept")){
+                        mtextViewStatusBooking.setText(R.string.txt_travel_aceptado);
+                    }else if(status.equals("start")){
+                        mtextViewStatusBooking.setText(R.string.txt_travel_iniciado);
+                        startBooking();
+                    }else if(status.equals("finish")){
+                        mtextViewStatusBooking.setText(R.string.txt_travel_finalizado);
+                        finishBooking();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void finishBooking() {
+        Intent intent = new Intent(MapClientBookingActivity.this, CalificationDriveractivity.class);
+        startActivity(intent);
+        finish(); // finalizar esta actividad
+    }
+
+    private void startBooking() {
+        mMap.clear(); // eliminamos la ruta y el marcador
+        mMap.addMarker(new MarkerOptions().position(mDestinationLatLong).title("Destino").icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_blue)));
+
+        drawRoute(mDestinationLatLong);
     }
 
     private void getClientBooking(){
@@ -178,6 +224,9 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         if(mlistener != null && mIdDriver != null){
             mGeofireProvider.getDriverLocation(mIdDriver).removeEventListener(mlistener);
         }
+        if(mListenerStatus != null && mAtuchProvider.exitSesion()) {
+            mclientBookingProvider.getstatus(mAtuchProvider.getId()).removeEventListener(mListenerStatus);
+        }
     }
 
     public void getDriverLocation(String idDriver){
@@ -209,7 +258,7 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
                                         .zoom(17f)
                                         .build()
                         ));
-                        drawRoute();
+                        drawRoute(mOrigenLatLong);
                     }
                 }
             }
@@ -221,8 +270,8 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         });
     }
 
-    private void drawRoute() {
-        mGoogleApiProvider.getDirections(mDriverLatLong, mOrigenLatLong).enqueue(new Callback<String>() {
+    private void drawRoute(LatLng latLng) {
+        mGoogleApiProvider.getDirections(mDriverLatLong, latLng).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 try {
