@@ -61,4 +61,6 @@
     <string name="txt_email_driver">Email del conductor</string>
     <string name="txt_viaje">INICIAR VIAJE</string>
     <string name="txt_finalizar">FINALIZAR VIAJE</string>
+    <string name="txt_cerca_position_client">Estas cerca a la posición del cliente</string>
+    <string name="txt_error_position_recogida">Debes estar más cerca a la posición de recogida.</string>
 </resources>

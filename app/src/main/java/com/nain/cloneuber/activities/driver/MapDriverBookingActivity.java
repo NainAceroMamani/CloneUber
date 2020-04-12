@@ -148,6 +148,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
     private Button mButtonStartBooking;
     private Button mButtonFinishBooking;
 
+    private boolean mIsCloseToClient = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -181,7 +183,11 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mButtonStartBooking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startBooking();
+                if(mIsCloseToClient) {
+                    startBooking();
+                }else {
+                    Toast.makeText(MapDriverBookingActivity.this, R.string.txt_error_position_recogida, Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -201,6 +207,22 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mclientBookingProvider.updateStatus(mExtraClientId, "start");
         mButtonStartBooking.setVisibility(View.GONE);
         mButtonFinishBooking.setVisibility(View.VISIBLE);
+    }
+
+    // obtener cuanta distancia existe entre la position de recojida y el conductor
+    public double getDistanceBetween(LatLng clientLatLng, LatLng driverLatLng) {
+        double distance = 0;
+        Location clientLocation = new Location("");
+        Location driverLocation = new Location("");
+
+        clientLocation.setLatitude(clientLatLng.latitude);
+        clientLocation.setLatitude(clientLatLng.longitude);
+        driverLocation.setLatitude(driverLatLng.latitude);
+        driverLocation.setLatitude(driverLatLng.longitude);
+
+        // obtenemos la distancia
+        distance = clientLocation.distanceTo(driverLocation);
+        return distance;
     }
 
     private void getClientBooking(){
@@ -305,6 +327,15 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         // preguntamos si existe la sesion
         if(mAtuchProvider.exitSesion() && mCurrentLatlng != null) {
             mGeofireProvider.savaLocation(mAtuchProvider.getId(), mCurrentLatlng);
+            if(!mIsCloseToClient) { // para que solo entre una vez ya que el locationCallbalk lo llamara siempre para actualizar su position
+                if(mOrigenLatLong != null && mCurrentLatlng != null) {
+                    double distance = getDistanceBetween(mOrigenLatLong, mCurrentLatlng); // retornará en metros
+                    if(distance <= 200) {
+                        mIsCloseToClient = true;
+                        Toast.makeText(this, R.string.txt_cerca_position_client, Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
         }
     }
 
