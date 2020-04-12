@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -144,6 +145,9 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
     private String mExtraClientId; // para obtener el extra que se esta pasando del AcceptReciver
     private ClientProvider mClientProvider;
 
+    private Button mButtonStartBooking;
+    private Button mButtonFinishBooking;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,6 +164,9 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mtextViewOriginClientBooking = findViewById(R.id.textViewOriginClientBooking);
         mtextViewDestinationBooking = findViewById(R.id.textViewDestinationClientBooking);
 
+        mButtonStartBooking = findViewById(R.id.btnStartBooking);
+        mButtonFinishBooking = findViewById(R.id.btnFinishBooking);
+
         mGoogleApiProvider = new GoogleApiProvider(MapDriverBookingActivity.this);
 
         mclientBookingProvider = new ClientBookingProvider();
@@ -170,6 +177,30 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mExtraClientId = getIntent().getStringExtra("idClient");
         mClientProvider = new ClientProvider();
         getClient();
+
+        mButtonStartBooking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startBooking();
+            }
+        });
+
+        mButtonFinishBooking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishBooking();
+            }
+        });
+    }
+
+    private void finishBooking() {
+        mclientBookingProvider.updateStatus(mExtraClientId, "finish");
+    }
+
+    private void startBooking() {
+        mclientBookingProvider.updateStatus(mExtraClientId, "start");
+        mButtonStartBooking.setVisibility(View.GONE);
+        mButtonFinishBooking.setVisibility(View.VISIBLE);
     }
 
     private void getClientBooking(){
