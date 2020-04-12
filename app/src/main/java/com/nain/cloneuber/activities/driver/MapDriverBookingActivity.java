@@ -207,6 +207,10 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         mclientBookingProvider.updateStatus(mExtraClientId, "start");
         mButtonStartBooking.setVisibility(View.GONE);
         mButtonFinishBooking.setVisibility(View.VISIBLE);
+        mMap.clear(); // eliminá el marcador y la ruta trazada
+        // marcador al lugar de destino
+        mMap.addMarker(new MarkerOptions().position(mDestinationLatLong).title("Destino").icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_blue)));
+        drawRoute(mDestinationLatLong);
     }
 
     // obtener cuanta distancia existe entre la position de recojida y el conductor
@@ -244,7 +248,7 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
                     mtextViewOriginClientBooking.setText("Recoger en: " + origen);
                     mtextViewDestinationBooking.setText("Destino: " + destino);
                     mMap.addMarker(new MarkerOptions().position(mOrigenLatLong).title("Recoger Aquí").icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_red)));
-                    drawRoute();
+                    drawRoute(mOrigenLatLong);
                 }
             }
 
@@ -255,8 +259,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
         });
     }
 
-    private void drawRoute() {
-        mGoogleApiProvider.getDirections(mCurrentLatlng, mOrigenLatLong).enqueue(new Callback<String>() {
+    private void drawRoute(LatLng latLng) {
+        mGoogleApiProvider.getDirections(mCurrentLatlng, latLng).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 try {
