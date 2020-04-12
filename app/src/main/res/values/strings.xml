@@ -70,4 +70,10 @@
     <string name="txt_travel_finalizado">Estado: Viaje finalizado</string>
     <string name="txt_travel_client_finish">Viaje finalizado</string>
     <string name="txt_travel_client_iniciado">Viaje iniciado</string>
+    <string name="txt_hasta">Tacna Peru Av.Ejercito</string>
+    <string name="txt_desde">Tacna Peru Av.Ejercito</string>
+    <string name="txt_value_hasta">Hasta</string>
+    <string name="txt_value_desde">Desde</string>
+    <string name="txt_travel_finish">VIAJE FINALIZADO</string>
+    <string name="txt_calificar_client">CALIFICAR CLIENTE</string>
 </resources>
