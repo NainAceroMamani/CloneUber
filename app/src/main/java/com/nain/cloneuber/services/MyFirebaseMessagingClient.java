@@ -84,7 +84,7 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
         if(!isScreenOn){
             // si la pantalla no esta encendida
             PowerManager.WakeLock wakeLock = pm.newWakeLock(
-                    PowerManager.FULL_WAKE_LOCK |
+                    PowerManager.PARTIAL_WAKE_LOCK |
                             PowerManager.ACQUIRE_CAUSES_WAKEUP |
                             PowerManager.ON_AFTER_RELEASE ,
                     "AppNmae:MyLock"
