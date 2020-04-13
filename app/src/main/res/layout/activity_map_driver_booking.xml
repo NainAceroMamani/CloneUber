@@ -24,7 +24,7 @@
         android:text="@string/txt_finalizar"
         android:background="@drawable/rounded_button"
         android:visibility="gone"
-        android:backgroundTint="@android:color/holo_red_dark"
+        android:backgroundTint="@color/color_BlueLight"
         android:textColor="@color/colorWhite"
         android:layout_margin="10dp"/>
 
