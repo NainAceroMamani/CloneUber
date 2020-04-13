@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.client.CalificationDriveractivity"></activity>
+        <activity android:name=".activities.driver.NotificationBookingActivity"></activity>
+        <activity android:name=".activities.client.CalificationDriveractivity" />
         <activity android:name=".activities.driver.CalificationClientActivity" />
         <activity android:name=".activities.driver.MapDriverBookingActivity" />
         <activity android:name=".activities.client.MapClientBookingActivity" /> <!-- declaramos el AcceptReciver para que tenga aaceso a la notification btn=> accept, cancel -->

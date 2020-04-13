@@ -78,4 +78,8 @@
     <string name="txt_calificar_client">CALIFICAR CLIENTE</string>
     <string name="txt_error_calification">Debes ingresar la calificación</string>
     <string name="txt_success_calification">La calificación se guardó correctamente</string>
+    <string name="txt_time_llegar">Tiempo de llegada</string>
+    <string name="txt_notification_distance">Distancia</string>
+    <string name="txt_aceptar">ACEPTAR</string>
+    <string name="txt_rechazar">RECHAZAR</string>
 </resources>
