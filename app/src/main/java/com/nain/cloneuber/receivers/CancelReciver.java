@@ -23,7 +23,7 @@ public class CancelReciver extends BroadcastReceiver {
         mclientBookingProvider.updateStatus(idClient, "cancel");
 
         // para que desaparesca automaticamente
-        NotificationManager manager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(2); // el id de la notifiacation con boton es el 2
     }
 }

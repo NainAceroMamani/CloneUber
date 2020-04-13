@@ -2,10 +2,12 @@ package com.nain.cloneuber.services;
 
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -14,6 +16,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.driver.NotificationBookingActivity;
 import com.nain.cloneuber.channel.NotificationHelper;
 import com.nain.cloneuber.receivers.AcceptReciver;
 import com.nain.cloneuber.receivers.CancelReciver;
@@ -38,7 +41,7 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
         RemoteMessage.Notification notification = remoteMessage.getNotification();
         // creamos mapa de valores
-        Map<String, String> data = remoteMessage.getData();
+        Map<String, String> data = remoteMessage.getData(); // obtenemos todos los parametros que pasamos
         String title = data.get("title");   // obtenemos el titulo de la notificacion
         String body = data.get("body");     // obtenemos el cuerpo de la notificacion
 
@@ -48,7 +51,12 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                 // verificamos si en la notificacion esta la palabra SOLICIUTD DE SERVICIO.....
                 if(title.contains("SOLICITUD DE SERVICIO")) {
                     String idClient = data.get("idClient");
+                    String origin = data.get("origin");
+                    String destination = data.get("destination");
+                    String min = data.get("min");
+                    String distance = data.get("distance");
                     showNotificationApiOreoActions(title, body, idClient);
+                    showNotificationActivity(idClient, origin, destination, min, distance);
                 }else {
                     showNotificationApiOreo(title, body);
                 }
@@ -56,12 +64,42 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                 // verificamos si en la notificacion esta la palabra SOLICIUTD DE SERVICIO.....
                 if(title.contains("SOLICITUD DE SERVICIO")) {
                     String idClient = data.get("idClient");
+                    String origin = data.get("origin");
+                    String destination = data.get("destination");
+                    String min = data.get("min");
+                    String distance = data.get("distance");
                     showNotificationApiAction(title, body, idClient);
+                    showNotificationActivity(idClient, origin, destination, min, distance);
                 }else {
                     showNotificationApi(title, body);
                 }
             }
         }
+    }
+
+    private void showNotificationActivity(String idClient,String origin,String destination, String min,String distance){
+        // encender el celular haci este bloqueado
+        PowerManager pm = (PowerManager) getBaseContext().getSystemService(Context.POWER_SERVICE);
+        boolean isScreenOn = pm.isScreenOn(); // para verificar si la pantalla esta encendida
+        if(!isScreenOn){
+            // si la pantalla no esta encendida
+            PowerManager.WakeLock wakeLock = pm.newWakeLock(
+                    PowerManager.FULL_WAKE_LOCK |
+                            PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                            PowerManager.ON_AFTER_RELEASE ,
+                    "AppNmae:MyLock"
+            );
+            wakeLock.acquire(10000);
+        }
+        Intent intent = new Intent(getBaseContext(), NotificationBookingActivity.class);
+        intent.putExtra("idClient", idClient);
+        intent.putExtra("origin", origin);
+        intent.putExtra("destination", destination);
+        intent.putExtra("min", min);
+        intent.putExtra("distance", distance);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // para que no pueda volver atras
+        startActivity(intent);
+        // añadir los permisos en el manifest
     }
 
     private void showNotificationApi(String title, String body) {

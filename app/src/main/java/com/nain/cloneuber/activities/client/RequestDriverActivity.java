@@ -217,6 +217,10 @@ public class RequestDriverActivity extends AppCompatActivity {
                             "Recoger en: " + mExtraOrigin + "\n" +
                             "Destino: " + mExtraDestination);
                     map.put("idClient", authProvider.getId());
+                    map.put("origin", mExtraOrigin);
+                    map.put("destination", mExtraDestination);
+                    map.put("min", time);
+                    map.put("distance", km);
                     FCMBody fcmBody= new FCMBody(token, "high","4500s",map);
                     notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
                         @Override
