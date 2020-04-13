@@ -11,6 +11,6 @@ public class CalificationDriveractivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calification_driveractivity);
+        setContentView(R.layout.activity_calification_driver);
     }
 }

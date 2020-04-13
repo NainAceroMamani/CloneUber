@@ -27,7 +27,7 @@
             app:lottie_imageAssetsFolder="assets"
             app:lottie_fileName="782-check-mark-success.json"
             app:lottie_autoPlay="true"
-            app:lottie_loop="true"
+            app:lottie_loop="false"
             android:layout_gravity="center"
             android:layout_marginTop="30dp"/>
 
@@ -68,6 +68,7 @@
             android:layout_marginTop="5dp"/>
 
         <RatingBar
+            android:id="@+id/RatinBarCalification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -76,7 +77,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnCalificationClient"
+        android:id="@+id/btnCalification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"

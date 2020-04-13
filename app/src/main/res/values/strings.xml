@@ -76,4 +76,6 @@
     <string name="txt_value_desde">Desde</string>
     <string name="txt_travel_finish">VIAJE FINALIZADO</string>
     <string name="txt_calificar_client">CALIFICAR CLIENTE</string>
+    <string name="txt_error_calification">Debes ingresar la calificación</string>
+    <string name="txt_success_calification">La calificación se guardó correctamente</string>
 </resources>

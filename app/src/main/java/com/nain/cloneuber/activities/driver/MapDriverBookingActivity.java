@@ -216,9 +216,11 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
     private void finishBooking() {
         mclientBookingProvider.updateStatus(mExtraClientId, "finish");
+        mclientBookingProvider.updateIdHistoryBooking(mExtraClientId); //creamos un id unico para el historial
         senNotification(getString(R.string.txt_travel_client_finish));
         disconnect(); // dejamos de escuhcar el gps y eliminamos de fireabse database las posiciones
         Intent intent = new Intent(MapDriverBookingActivity.this, CalificationClientActivity.class);
+        intent.putExtra("idClient", mExtraClientId);
         startActivity(intent);
         finish(); // para que no podamos volver hacia atras
     }

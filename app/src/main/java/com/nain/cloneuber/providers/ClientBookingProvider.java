@@ -36,4 +36,12 @@ public class ClientBookingProvider {
     public DatabaseReference getClientBooking(String idClientBooking){
         return mDatabase.child(idClientBooking);
     }
+
+    // para generar un id unico para almacenar el historial de viajes
+    public Task<Void> updateIdHistoryBooking(String idClientBooking) {
+        String idPush = mDatabase.push().getKey(); // creamos un identificador unico para almacenar el historial
+        Map<String, Object> map = new HashMap<>();
+        map.put("idHistoryBooking", idPush);
+        return mDatabase.child(idClientBooking).updateChildren(map);
+    }
 }
