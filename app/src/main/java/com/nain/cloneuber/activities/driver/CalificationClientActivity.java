@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.client.CalificationDriveractivity;
+import com.nain.cloneuber.activities.client.MapClientActivity;
 import com.nain.cloneuber.models.ClientBooking;
 import com.nain.cloneuber.models.HistoryBooking;
 import com.nain.cloneuber.providers.ClientBookingProvider;
@@ -118,7 +119,16 @@ public class CalificationClientActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()) {
-                        mhistoryBookingProvider.updateCalificationClient(mhistoryBooking.getIdHistoryBooking(), mCalification);
+                        // addOnSuccessListener si se ejecuto correctamente que me lleve a otra pantalla
+                        mhistoryBookingProvider.updateCalificationClient(mhistoryBooking.getIdHistoryBooking(), mCalification).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(CalificationClientActivity.this, R.string.txt_success_calification, Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(CalificationClientActivity.this, MapDriverActivity.class);
+                                startActivity(intent);
+                                finish(); // par que no se pueda volver hacia atras => finalizamos la actividad
+                            }
+                        });
                     }else {
                         mhistoryBookingProvider.create(mhistoryBooking).addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
