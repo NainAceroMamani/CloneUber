@@ -508,7 +508,7 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
     // sobreescribir metodo
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.driver_menu, menu); // cargamos el menu
+        getMenuInflater().inflate(R.menu.client_menu, menu); // cargamos el menu
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -519,7 +519,18 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         if(item.getItemId() == R.id.action_logout) {
             logout();
         }
+
+        if(item.getItemId() == R.id.action_profile) {
+            profile();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void profile() {
+        if(mAtuchProvider.exitSesion()) {
+            Intent intent = new Intent(MapClientActivity.this, UpdateProfileActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void logout() {

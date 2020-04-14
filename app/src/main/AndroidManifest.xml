@@ -3,8 +3,7 @@
     package="com.nain.cloneuber">
     <!-- PERMISOS DEL APP -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<!--    para encender celular-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- para encender celular -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -14,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.driver.NotificationBookingActivity"></activity>
+        <activity android:name=".activities.client.UpdateProfileActivity"
+            android:parentActivityName=".activities.client.MapClientActivity"/>
+        <activity android:name=".activities.driver.NotificationBookingActivity" />
         <activity android:name=".activities.client.CalificationDriveractivity" />
         <activity android:name=".activities.driver.CalificationClientActivity" />
         <activity android:name=".activities.driver.MapDriverBookingActivity" />
