@@ -5,11 +5,30 @@ public class Client {
     String id;
     String name;
     String email;
+    String imagen;
+
+    public Client() {
+    }
 
     public Client(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
+    }
+
+    public Client(String id, String name, String email, String imagen) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.imagen = imagen;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public String getId() {

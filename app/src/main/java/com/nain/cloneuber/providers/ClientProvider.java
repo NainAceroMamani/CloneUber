@@ -26,6 +26,15 @@ public class ClientProvider {
         return mDatabase.child(client.getId()).setValue(map);
     }
 
+    public Task<Void> update(Client client) {
+        // cuando lo crea se cre con id por eso mateamos el cliente
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", client.getName());
+        map.put("image", client.getImagen());
+
+        return mDatabase.child(client.getId()).updateChildren(map);
+    }
+
     // para obtener los datos del cliente
     public DatabaseReference getClient(String idClient) {
         return mDatabase.child(idClient);
