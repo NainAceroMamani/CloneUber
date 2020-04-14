@@ -32,7 +32,7 @@ public class AcceptReciver extends BroadcastReceiver {
         mclientBookingProvider = new ClientBookingProvider();
         mclientBookingProvider.updateStatus(idClient, "accept");
 
-        // para que desaparesca automaticamente
+        // para que desaparesca automaticamente => // permite eliminar la notificacion
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(2); // el id de la notifiacation con boton es el 2
 

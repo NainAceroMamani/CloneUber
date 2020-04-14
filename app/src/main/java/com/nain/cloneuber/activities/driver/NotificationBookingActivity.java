@@ -1,5 +1,6 @@
 package com.nain.cloneuber.activities.driver;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.NotificationManager;
@@ -13,7 +14,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.ClientBookingProvider;
@@ -51,6 +56,7 @@ public class NotificationBookingActivity extends AppCompatActivity {
     };
 
     private MediaPlayer mediaPlayer;
+    private ValueEventListener mlistener;
 
     // para inicializar el contador
     private void initTimer() {
@@ -85,6 +91,8 @@ public class NotificationBookingActivity extends AppCompatActivity {
         mediaPlayer = MediaPlayer.create(this, R.raw.ringtone);
         mediaPlayer.setLooping(true); // para que el sonido se repita varias veces
 
+        mclientBookingProvider = new ClientBookingProvider();
+
         // PARA ENCENDER EL CELULAR CUANDO ESTE APAGADO PARA MOSTRAR ESTA ACTIVIDAD
         getWindow().addFlags(
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
@@ -92,6 +100,8 @@ public class NotificationBookingActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         );
+
+        checkIfClientCancelBooking();
 
         initTimer();
 
@@ -110,12 +120,36 @@ public class NotificationBookingActivity extends AppCompatActivity {
         });
     }
 
+    private void checkIfClientCancelBooking(){
+        // addValueEventListener => traer datos en tiempo ral cada vez que se actualize fireabse
+        mlistener = mclientBookingProvider.getClientBooking(mExtraIdClient).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    // si no existe
+                    Toast.makeText(NotificationBookingActivity.this, R.string.txt_cancel_travel_client, Toast.LENGTH_LONG).show();
+                    if(mhandler != null) {
+                        // cuando le damos en cancelar nos aseguramos de que el hander deje de contar
+                        mhandler.removeCallbacks(rounable);
+                        Intent intent = new Intent(NotificationBookingActivity.this, MapDriverActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void cancelBooking() {
         if(mhandler != null) {
             // cuando le damos en cancelar nos aseguramos de que el hander deje de contar
             mhandler.removeCallbacks(rounable);
         }
-        mclientBookingProvider = new ClientBookingProvider();
         mclientBookingProvider.updateStatus(mExtraIdClient, "cancel");
 
         // para que desaparesca automaticamente
@@ -128,7 +162,7 @@ public class NotificationBookingActivity extends AppCompatActivity {
 
     private void acceptBooking() {
         if(mhandler != null) {
-            // cuando le damos en cancelar nos aseguramos de que el hander deje de contar
+            // cuando le damos en aceptar nos aseguramos de que el hander deje de contar
             mhandler.removeCallbacks(rounable);
         }
         // lo eliminamos de fireabse database
@@ -199,6 +233,9 @@ public class NotificationBookingActivity extends AppCompatActivity {
                 // verificar si esta sonando
                 mediaPlayer.pause(); // dejar de sonar
             }
+        }
+        if(mlistener != null && mExtraIdClient != null ) {
+            mclientBookingProvider.getClientBooking(mExtraIdClient).removeEventListener(mlistener);
         }
     }
 }

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -111,7 +112,75 @@ public class RequestDriverActivity extends AppCompatActivity {
         notificationProvider = new NotificationProvider();
 
         mGoogleApiProvider = new GoogleApiProvider(RequestDriverActivity.this);
+        mButtonCancelRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelRequest();
+            }
+        });
         getclosesDriver();
+    }
+
+    private void cancelRequest() {
+        // eliminar clientBoking
+        clientBookingProvider.delete(authProvider.getId()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // enviamos otra notificación
+                sendNotificationCancel();
+            }
+        });
+    }
+
+    private void sendNotificationCancel(){
+        tokenProvider.getTokens(mIdDriverFound).addListenerForSingleValueEvent(new ValueEventListener() {
+            // contiene la informacion del user que esta dentro del nodo
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    // verificamos que si venga porque sino se cierra el App
+
+                    String token  = dataSnapshot.child("token").getValue().toString();
+                    Map<String, String> map = new HashMap<>(); // en un mapa de string puedes mandar varios valores
+                    map.put("title","VIJAE CANCELADO");
+                    map.put("body","El cliente canceló la solicitud");
+                    FCMBody fcmBody= new FCMBody(token, "high","4500s",map);
+                    notificationProvider.sendNotification(fcmBody).enqueue(new Callback<FCMResponse>() {
+                        @Override
+                        public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                            // respuesta del servidor
+                            if(response.body() != null){
+                                if(response.body().getSuccess() == 1) {
+                                    Toast.makeText(RequestDriverActivity.this, R.string.txt_cancel_travel, Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(RequestDriverActivity.this, MapClientActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                    // Toast.makeText(RequestDriverActivity.this, R.string.txt_send_notification, Toast.LENGTH_LONG).show();
+                                }else{
+                                    Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                                }
+                            }else {
+                                // si no trae información
+                                Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<FCMResponse> call, Throwable t) {
+                            // en caso de rror en la peticion
+                            Log.d("Error", "Error: " + t.getMessage());
+                        }
+                    });
+                }else {
+                    Toast.makeText(RequestDriverActivity.this, R.string.txt_not_notification, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void getclosesDriver() {

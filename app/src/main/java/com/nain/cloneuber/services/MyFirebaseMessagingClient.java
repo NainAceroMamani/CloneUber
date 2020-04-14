@@ -1,6 +1,7 @@
 package com.nain.cloneuber.services;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -57,7 +58,12 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                     String distance = data.get("distance");
                     showNotificationApiOreoActions(title, body, idClient);
                     showNotificationActivity(idClient, origin, destination, min, distance);
-                }else {
+                }else if(title.contains("VIJAE CANCELADO")){
+                    // permite eliminar la notificacion
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.cancel(2); // el id de la notifiacation con boton es el 2
+                    showNotificationApiOreo(title, body);// MOSTRAMOS NOTIFICATION NORMAL
+                } else {
                     showNotificationApiOreo(title, body);
                 }
             }else {
@@ -70,7 +76,12 @@ public class MyFirebaseMessagingClient extends FirebaseMessagingService {
                     String distance = data.get("distance");
                     showNotificationApiAction(title, body, idClient);
                     showNotificationActivity(idClient, origin, destination, min, distance);
-                }else {
+                }else if(title.contains("VIJAE CANCELADO")){
+                    // permite eliminar la notificacion
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.cancel(2); // el id de la notifiacation con boton es el
+                    showNotificationApi(title, body); // MOSTRAMOS NOTIFICATION NORMAL
+                } else {
                     showNotificationApi(title, body);
                 }
             }

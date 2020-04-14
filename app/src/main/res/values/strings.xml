@@ -82,4 +82,6 @@
     <string name="txt_notification_distance">Distancia</string>
     <string name="txt_aceptar">ACEPTAR</string>
     <string name="txt_rechazar">RECHAZAR</string>
+    <string name="txt_cancel_travel">La solicitud se canceló correctamente</string>
+    <string name="txt_cancel_travel_client">El cliente cancelo el viaje</string>
 </resources>

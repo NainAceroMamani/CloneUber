@@ -44,4 +44,9 @@ public class ClientBookingProvider {
         map.put("idHistoryBooking", idPush);
         return mDatabase.child(idClientBooking).updateChildren(map);
     }
+
+    public Task<Void> delete(String idClientBooking){
+        // eliminar info de la base de datos
+        return mDatabase.child(idClientBooking).removeValue();
+    }
 }
