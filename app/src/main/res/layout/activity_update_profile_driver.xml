@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.driver.UpdateProfileDriverActivity">
+
+    <include android:id="@+id/toolbar" layout="@layout/action_bar_toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@+id/toolbar">
+
+        <ImageView
+            android:id="@+id/imageViewProfile"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/user"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/bgHeader"
+            app:cardCornerRadius="10dp"
+            android:layout_margin="20dp"
+            app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingBottom="50dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_nombre"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/color_Purple"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/txtInputNombre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_marca_vehicle"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/color_Purple"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/txtInputMarca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/txt_placa_vehicle"
+                        android:layout_margin="5dp"
+                        android:textSize="14sp"
+                        android:textColor="@color/color_Purple"
+                        android:textStyle="bold"/>
+
+                    <EditText
+                        android:id="@+id/txtInputPlaca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"/>
+                </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/cv"
+            android:layout_alignLeft="@+id/cv"
+            android:layout_alignRight="@+id/cv"
+            android:layout_marginLeft="35dp"
+            android:layout_marginRight="35dp"
+            android:layout_marginTop="-50dp"
+            android:elevation="10dp">
+
+            <Button
+                android:id="@+id/btnProfileUpdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_ui"
+                android:text="@string/txt_profile_update"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

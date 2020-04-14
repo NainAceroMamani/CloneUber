@@ -45,6 +45,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.activities.MainActivity;
+import com.nain.cloneuber.activities.client.MapClientActivity;
+import com.nain.cloneuber.activities.client.UpdateProfileActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
@@ -374,7 +376,19 @@ public class MapDriverActivity extends AppCompatActivity implements OnMapReadyCa
         if(item.getItemId() == R.id.action_logout) {
             logout();
         }
+
+        if(item.getItemId() == R.id.action_profile) {
+            profileDriver();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void profileDriver() {
+        if(mAtuchProvider.exitSesion()) {
+            Intent intent = new Intent(MapDriverActivity.this, UpdateProfileDriverActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void logout() {

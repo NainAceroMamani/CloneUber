@@ -1,4 +1,4 @@
-package com.nain.cloneuber.activities.client;
+package com.nain.cloneuber.activities.driver;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,21 +26,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.UploadTask;
 import com.nain.cloneuber.R;
 import com.nain.cloneuber.includes.MyToolbar;
-import com.nain.cloneuber.models.Client;
+import com.nain.cloneuber.models.Driver;
 import com.nain.cloneuber.providers.AuthProvider;
-import com.nain.cloneuber.providers.ClientProvider;
+import com.nain.cloneuber.providers.DriverProvider;
 import com.nain.cloneuber.providers.ImageProvider;
 import com.nain.cloneuber.utils.FileUtil;
 
 import java.io.File;
 
-public class UpdateProfileActivity extends AppCompatActivity {
-
+public class UpdateProfileDriverActivity extends AppCompatActivity {
     private ImageView mImageViewProfile;
     private Button mButtonUpdate;
-    private EditText mTextViewName;
+    private EditText mTextViewName, mTextViewMarca, mTextViewPlaca;
 
-    private ClientProvider clientProvider;
+    private DriverProvider driverProvider;
     private AuthProvider authProvider;
 
     private File mImageFile; // para abrir la galeria
@@ -49,23 +48,30 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     private ProgressDialog progressDialog;
     private String name;
+    private String vehiculeBrand;
+    private String vehiculePlate;
+
     private ImageProvider imageProvider;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_update_profile);
+        setContentView(R.layout.activity_update_profile_driver);
         MyToolbar.show(this, "Actualizar Perfil", true);
 
         mImageViewProfile = findViewById(R.id.imageViewProfile);
         mTextViewName = findViewById(R.id.txtInputNombre);
         mButtonUpdate = findViewById(R.id.btnProfileUpdate);
+        mTextViewMarca = findViewById(R.id.txtInputMarca);
+        mTextViewPlaca = findViewById(R.id.txtInputPlaca);
 
-        clientProvider = new ClientProvider();
+        driverProvider = new DriverProvider();
         authProvider = new AuthProvider();
-        imageProvider = new ImageProvider("client_images");
 
         progressDialog = new ProgressDialog(this);
+
+        imageProvider = new ImageProvider("driver_images");
 
         mImageViewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +81,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             }
         });
 
-        getClientInfo();
+        getDriverInfo();
 
         mButtonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,14 +114,18 @@ public class UpdateProfileActivity extends AppCompatActivity {
     }
 
     // traer la info del cliente autentificado
-    private void getClientInfo(){
+    private void getDriverInfo(){
         // addListenerForSingleValueEvent => solo obtener info una unica vez
-        clientProvider.getClient(authProvider.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+        driverProvider.getDriver(authProvider.getId()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue().toString();
+                    String marca = dataSnapshot.child("VehicleBrand").getValue().toString();
+                    String placa = dataSnapshot.child("VehiclePlate").getValue().toString();
                     mTextViewName.setText(name);
+                    mTextViewMarca.setText(marca);
+                    mTextViewPlaca.setText(placa);
                 }
             }
 
@@ -128,6 +138,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     private void updateProfile() {
         name = mTextViewName.getText().toString(); // nombre que ingreso en el input
+        vehiculeBrand = mTextViewMarca.getText().toString();
+        vehiculePlate = mTextViewPlaca.getText().toString();
         if(!name.equals("") && mImageFile != null){
             // validar que el nombre no este vacio y que si
             progressDialog.setMessage("Espere un momento...");
@@ -142,40 +154,36 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     private void saveImage() {
         // comprimir la img
-//        byte[] ImageByte = CompressorBitmapImage.getImage(this, mImageFile.getPath(),500,500);
-//        final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("client_images").child(authProvider.getId() + ".jpg");
-//        UploadTask uploadTask = storageReference.putBytes(ImageByte); // subimos la img a fireabse
-//        uploadTask.addOnCompleteListener
-
-        imageProvider.saveImagen(UpdateProfileActivity.this, mImageFile, authProvider.getId()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        imageProvider.saveImagen(UpdateProfileDriverActivity.this, mImageFile, authProvider.getId()).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(task.isSuccessful()){
                     // preguntamos si se subio la imagen correctamente
                     // OBTENEMOS EL LINK PARA PODER MOSTRAR LA IMAGEN
-//                    storageReference.getDownloadUrl().addOnSuccessListener
                     imageProvider.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
                             // uri => la url de la imagen que esta apuntando
                             String image = uri.toString();
                             // incluimos la url de la img a Firebase Database
-                            Client client = new Client();
-                            client.setImagen(image);
-                            client.setId(authProvider.getId());
-                            client.setName(name);
-                            clientProvider.update(client).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            Driver driver = new Driver();
+                            driver.setImagen(image);
+                            driver.setId(authProvider.getId());
+                            driver.setName(name);
+                            driver.setVehicleBrand(vehiculeBrand);
+                            driver.setVehiclePlate(vehiculePlate);
+                            driverProvider.update(driver).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     progressDialog.dismiss(); // ocultamos el dialog
                                     // si actualizo correctamente
-                                    Toast.makeText(UpdateProfileActivity.this, "Su información se actualizó correctamente", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(UpdateProfileDriverActivity.this, "Su información se actualizó correctamente", Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
                     });
                 }else {
-                    Toast.makeText(UpdateProfileActivity.this, R.string.txt_img_upload, Toast.LENGTH_LONG).show();
+                    Toast.makeText(UpdateProfileDriverActivity.this, R.string.txt_img_upload, Toast.LENGTH_LONG).show();
                 }
             }
         });

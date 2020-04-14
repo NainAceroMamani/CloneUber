@@ -115,8 +115,8 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         if(dataSnapshot.exists()) {
-                                            String marca = dataSnapshot.child("getVehicleBrand").getValue().toString();
-                                            String placa = dataSnapshot.child("getVehiclePlate").getValue().toString();
+                                            String marca = dataSnapshot.child("VehicleBrand").getValue().toString();
+                                            String placa = dataSnapshot.child("VehiclePlate").getValue().toString();
 
                                             if(marca != null && placa != null) {
                                                 Intent intent = new Intent(LoginActivity.this, MapDriverActivity.class);

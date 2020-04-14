@@ -7,6 +7,19 @@ public class Driver {
     String email;
     String vehicleBrand;
     String vehiclePlate;
+    String imagen;
+
+    public Driver() {
+    }
+
+    public Driver(String id, String name, String email, String vehicleBrand, String vehiclePlate, String imagen) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.vehicleBrand = vehicleBrand;
+        this.vehiclePlate = vehiclePlate;
+        this.imagen = imagen;
+    }
 
     public Driver(String id, String name, String email, String vehicleBrand, String vehiclePlate) {
         this.id = id;
@@ -14,6 +27,14 @@ public class Driver {
         this.email = email;
         this.vehicleBrand = vehicleBrand;
         this.vehiclePlate = vehiclePlate;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
     public String getId() {
