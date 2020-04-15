@@ -25,12 +25,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.UploadTask;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.client.UpdateProfileActivity;
 import com.nain.cloneuber.includes.MyToolbar;
 import com.nain.cloneuber.models.Driver;
 import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.DriverProvider;
 import com.nain.cloneuber.providers.ImageProvider;
 import com.nain.cloneuber.utils.FileUtil;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -123,6 +125,13 @@ public class UpdateProfileDriverActivity extends AppCompatActivity {
                     String name = dataSnapshot.child("name").getValue().toString();
                     String marca = dataSnapshot.child("VehicleBrand").getValue().toString();
                     String placa = dataSnapshot.child("VehiclePlate").getValue().toString();
+                    String image = "";
+                    // validar que contenga imagen porque puede ser que el usuario no tenga imagen
+                    if(dataSnapshot.hasChild("image")){
+                        image = dataSnapshot.child("image").getValue().toString();
+                        // mostramos la imagen
+                        Picasso.with(UpdateProfileDriverActivity.this).load(image).into(mImageViewProfile);
+                    }
                     mTextViewName.setText(name);
                     mTextViewMarca.setText(marca);
                     mTextViewPlaca.setText(placa);

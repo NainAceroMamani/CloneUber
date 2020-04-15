@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +63,7 @@ import com.nain.cloneuber.providers.GoogleApiProvider;
 import com.nain.cloneuber.providers.NotificationProvider;
 import com.nain.cloneuber.providers.TokenProvider;
 import com.nain.cloneuber.utils.DecodePoints;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -99,6 +101,8 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
     private LatLng mDestinationLatLong;
 
     private GoogleApiProvider mGoogleApiProvider;
+
+    private ImageView imageViewBooking;
 
     // para decodificar
     private List<LatLng> mPolylineList;
@@ -187,6 +191,7 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
 
         tokenProvider = new TokenProvider();
         notificationProvider = new NotificationProvider();
+        imageViewBooking = findViewById(R.id.imageViewClientBooking);
 
         mAtuchProvider = new AuthProvider();
         mGeofireProvider = new GeoFireProvider("drivers_working");
@@ -337,6 +342,13 @@ public class MapDriverBookingActivity extends AppCompatActivity implements OnMap
                 if(dataSnapshot.exists()) {
                     String email = dataSnapshot.child("email").getValue().toString();
                     String name = dataSnapshot.child("name").getValue().toString();
+                    String image = "";
+                    // validar que contenga imagen porque puede ser que el usuario no tenga imagen
+                    if(dataSnapshot.hasChild("image")){
+                        image = dataSnapshot.child("image").getValue().toString();
+                        // mostramos la imagen
+                        Picasso.with(MapDriverBookingActivity.this).load(image).into(imageViewBooking);
+                    }
                     mtextViewClientBooking.setText(name);
                     mtextViewEmailClientBooking.setText(email);
                 }

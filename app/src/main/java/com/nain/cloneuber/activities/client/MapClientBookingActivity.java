@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,6 +40,7 @@ import com.nain.cloneuber.providers.DriverProvider;
 import com.nain.cloneuber.providers.GeoFireProvider;
 import com.nain.cloneuber.providers.GoogleApiProvider;
 import com.nain.cloneuber.utils.DecodePoints;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -64,6 +66,8 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
 
     // para el buscador
     private PlacesClient mPlaces;
+
+    private ImageView imageViewBooking;
 
     // para guardar el lugar
     private String mOrigin;         // nombre del lugar
@@ -116,6 +120,8 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
         mtextViewOriginClientBooking = findViewById(R.id.textViewOriginClientBooking);
         mtextViewDestinationBooking = findViewById(R.id.textViewDestinationDriverBooking);
         mtextViewStatusBooking = findViewById(R.id.textViewStatusBooking);
+
+        imageViewBooking = findViewById(R.id.imageViewClientBooking);
 
         mclientBookingProvider = new ClientBookingProvider();
         mdriverProvider = new DriverProvider();
@@ -205,7 +211,13 @@ public class MapClientBookingActivity extends AppCompatActivity implements OnMap
                 if(dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue().toString();
                     String email = dataSnapshot.child("email").getValue().toString();
-
+                    String image = "";
+                    // validar que contenga imagen porque puede ser que el usuario no tenga imagen
+                    if(dataSnapshot.hasChild("image")){
+                        image = dataSnapshot.child("image").getValue().toString();
+                        // mostramos la imagen
+                        Picasso.with(MapClientBookingActivity.this).load(image).into(imageViewBooking);
+                    }
                     mtextViewClientBooking.setText(name);
                     mtextViewEmailClientBooking.setText(email);
                 }

@@ -31,6 +31,7 @@ import com.nain.cloneuber.providers.AuthProvider;
 import com.nain.cloneuber.providers.ClientProvider;
 import com.nain.cloneuber.providers.ImageProvider;
 import com.nain.cloneuber.utils.FileUtil;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -116,6 +117,13 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 if(dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue().toString();
                     mTextViewName.setText(name);
+                    String image = "";
+                    // validar que contenga imagen porque puede ser que el usuario no tenga imagen
+                    if(dataSnapshot.hasChild("image")){
+                        image = dataSnapshot.child("image").getValue().toString();
+                        // mostramos la imagen
+                        Picasso.with(UpdateProfileActivity.this).load(image).into(mImageViewProfile);
+                    }
                 }
             }
 
