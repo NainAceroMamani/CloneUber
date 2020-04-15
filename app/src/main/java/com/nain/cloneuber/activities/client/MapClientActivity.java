@@ -523,7 +523,18 @@ public class MapClientActivity extends AppCompatActivity implements OnMapReadyCa
         if(item.getItemId() == R.id.action_profile) {
             profile();
         }
+
+        if(item.getItemId() == R.id.action_history) {
+            history();
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void history(){
+        if(mAtuchProvider.exitSesion()) {
+            Intent intent = new Intent(MapClientActivity.this, HistoryBookingClientActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void profile() {

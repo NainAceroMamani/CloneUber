@@ -88,4 +88,7 @@
     <string name="txt_perfil_usuario">Perfil de Usuario</string>
     <string name="txt_required_img_name">Ingresa la imagen y el nombre</string>
     <string name="txt_img_upload">Hubo un error al subir la imagen</string>
+    <string name="txt_name">Nombre: </string>
+    <string name="txt_calificacion">Calificacion obtenida:</string>
+    <string name="txt_history_travel">Historial de viajes</string>
 </resources>
