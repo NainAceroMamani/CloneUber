@@ -16,11 +16,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:src="@drawable/icon_map"
-                android:layout_gravity="center"/>
+            <com.github.florent37.shapeofview.shapes.DiagonalView
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:elevation="4dp"
+                app:shape_diagonal_angle="10"
+                app:shape_diagonal_direction="left"
+                app:shape_diagonal_position="bottom">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimaryDark"/>
+
+                <ImageView
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:src="@drawable/icon_map"
+                    android:layout_gravity="center|top"/>
+
+            </com.github.florent37.shapeofview.shapes.DiagonalView>
 
             <TextView
                 android:layout_width="match_parent"
@@ -71,6 +86,11 @@
                     android:orientation="vertical"
                     android:gravity="center">
 
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/ic_timer_black" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -91,6 +111,11 @@
                     android:orientation="vertical"
                     android:layout_weight="1"
                     android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:src="@drawable/ic_map_black" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -132,7 +157,7 @@
             android:text="@string/txt_aceptar"
             android:layout_weight="1"
             android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/color_BlueLight"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:textColor="@color/colorWhite"
             android:layout_marginRight="5dp"/>
 
@@ -143,7 +168,7 @@
             android:text="@string/txt_rechazar"
             android:layout_weight="1"
             android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/color_Red"
+            android:backgroundTint="#595959"
             android:textColor="@color/colorWhite"
             android:layout_marginRight="5dp"/>
 

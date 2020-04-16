@@ -64,7 +64,7 @@
     <string name="txt_cerca_position_client">Estas cerca a la posición del cliente</string>
     <string name="txt_error_position_recogida">Debes estar más cerca a la posición de recogida.</string>
     <string name="txt_estatus">Estado</string>
-    <string name="txt_calificar_driver">CALIFICAR CONDUCTOR</string>
+    <string name="txt_calificar_driver">CALIFICAR CLIENTE</string>
     <string name="txt_travel_aceptado">Estado: Aceptado</string>
     <string name="txt_travel_iniciado">Estado: Viaje iniciado</string>
     <string name="txt_travel_finalizado">Estado: Viaje finalizado</string>
@@ -75,7 +75,7 @@
     <string name="txt_value_hasta">Hasta</string>
     <string name="txt_value_desde">Desde</string>
     <string name="txt_travel_finish">VIAJE FINALIZADO</string>
-    <string name="txt_calificar_client">CALIFICAR CLIENTE</string>
+    <string name="txt_calificar_client">CALIFICAR CONDUCTOR</string>
     <string name="txt_error_calification">Debes ingresar la calificación</string>
     <string name="txt_success_calification">La calificación se guardó correctamente</string>
     <string name="txt_time_llegar">Tiempo de llegada</string>
