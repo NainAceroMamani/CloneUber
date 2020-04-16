@@ -34,6 +34,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,11 +65,13 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
 
     private Button mbtnRequestNow;
 
+    private CircleImageView mCircleImageBack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_request);
-        MyToolbar.show(this, "TUS DATOS", true);
+        // MyToolbar.show(this, "TUS DATOS", true);
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mMapFragment.getMapAsync(this); //  es ese fragmento cargamos el mapa de google
@@ -99,6 +102,15 @@ public class DetailRequestActivity extends AppCompatActivity implements OnMapRea
             @Override
             public void onClick(View v) {
                 goToRequestDriver();
+            }
+        });
+
+        mCircleImageBack = findViewById(R.id.circleImageBack);
+
+        mCircleImageBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // terminamos la actividad
             }
         });
     }

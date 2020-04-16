@@ -41,10 +41,10 @@
     <string name="txt_destino">Destino</string>
     <string name="txt_solicitar_viaje">SOLICITAR AHORA</string>
     <string name="txt_error_places">Debe seleccionar el lugar de recogida y el destino</string>
-    <string name="txt_place_origen">Origen: </string>
-    <string name="txt_place_destination">Destino: </string>
-    <string name="txt_tiempo">Tiempo: </string>
-    <string name="txt_distance">Distancia: </string>
+    <string name="txt_place_origen">Origen </string>
+    <string name="txt_place_destination">Destino </string>
+    <string name="txt_tiempo">Tiempo </string>
+    <string name="txt_distance">Distancia </string>
     <string name="txt_buscando_conductor">BUSCANDO CONDUCTOR...</string>
     <string name="txt_cancel_viaje">CANCELAR VIAJE</string>
     <string name="txt_driver_encontrado">CONDUCTOR ENCONTRADO\nESPERANDO RESPUESTA</string>
