@@ -1,6 +1,7 @@
 package com.nain.cloneuber.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.nain.cloneuber.R;
+import com.nain.cloneuber.activities.client.HistoryBookingDetailClientActivity;
 import com.nain.cloneuber.models.HistoryBooking;
 import com.nain.cloneuber.providers.DriverProvider;
 import com.squareup.picasso.Picasso;
@@ -38,6 +40,9 @@ public class HistoryBookingClientAdapter extends FirebaseRecyclerAdapter<History
     // estableceremos los valores del card View
     @Override
     protected void onBindViewHolder(@NonNull final ViewHolder holder, int position, @NonNull HistoryBooking historyBooking) {
+        // enviamos el id del HistoryBooking
+        final String id = getRef(position).getKey(); // te devuelve el id de cada uo de los historiales de viaje
+
         // holder acceder a cada campo
         holder.textViewOrigen.setText(historyBooking.getOrigin());
         holder.textViewDestino.setText(historyBooking.getDestination());
@@ -60,6 +65,15 @@ public class HistoryBookingClientAdapter extends FirebaseRecyclerAdapter<History
 
             }
         });
+        // el view es toda la tarjeta
+        holder.mView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContex, HistoryBookingDetailClientActivity.class);
+                intent.putExtra("idHistoryBooking", id);
+                mContex.startActivity(intent);
+            }
+        });
     }
 
     // instaciamos el layout en este caso Card_History_Booking.xml
@@ -75,9 +89,12 @@ public class HistoryBookingClientAdapter extends FirebaseRecyclerAdapter<History
 
         private TextView textViewName, textViewOrigen, textViewDestino, textViewCalificacion;
         private ImageView imageViewHistoryBooking;
+        private View mView;
 
         public ViewHolder(View view) {
             super(view);
+            // el view es toda la tarjeta
+            mView = view;
             // findViewById solo es para actividades no estamos dentro de una actividad
             textViewName = view.findViewById(R.id.textViewName);
             textViewOrigen = view.findViewById(R.id.textViewOrigin);
